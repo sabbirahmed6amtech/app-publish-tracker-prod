@@ -15,6 +15,8 @@ export type AppStatus =
 export type TeamMember = {
   id: string;
   user_id: string | null;
+  /** The email their login signs in with, when they have one. */
+  login_email?: string | null;
   name: string;
   email: string | null;
   active: boolean;
@@ -296,6 +298,9 @@ export type IntakeApp = {
   client_note: string | null;
   line: string | null;
   logo: string | null;
+  /** The product line's generic store listing for this app role, if one is set. */
+  std_short: string | null;
+  std_long: string | null;
 };
 
 /** A store account as the intake form sees it — never its password. */

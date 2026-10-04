@@ -1,5 +1,6 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -21,6 +22,7 @@ import {
 } from "@/lib/db";
 import { removeUpload, safeFileName, saveUpload } from "@/lib/uploads";
 import { runStoreWatch } from "@/lib/storeWatchRun";
+import { prefillFromWebsite, type Prefill } from "@/lib/intakePrefill";
 import {
   APP_STORE_LIMITS,
   PLAY_LIMITS,
@@ -1011,24 +1013,98 @@ export async function deleteProductLine(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+/**
+ * Save a product line's generic store descriptions — one short + one full per
+ * app role (6amMart User app, Store app, Delivery app …). A client can then
+ * one-click these into the intake form. Scoped to the one line.
+ */
+export async function saveLineDescriptions(
+  lineId: string,
+  items: { project_name: string; short_description: string; long_description: string }[],
+): Promise<ActionResult> {
+  await requireUser();
+  if (!lineId) return { ok: false, error: "That product line doesn't exist." };
+
+  for (const it of items) {
+    if (it.short_description.length > PLAY_LIMITS.shortDescription) {
+      return { ok: false, error: `The short description for ${it.project_name} is too long (max ${PLAY_LIMITS.shortDescription}).` };
+    }
+    if (it.long_description.length > PLAY_LIMITS.longDescription) {
+      return { ok: false, error: `The full description for ${it.project_name} is too long (max ${PLAY_LIMITS.longDescription}).` };
+    }
+  }
+
+  try {
+    await transaction(async (conn) => {
+      for (const it of items) {
+        await exec(
+          `UPDATE product_line_projects SET short_description = ?, long_description = ?
+             WHERE line_id = ? AND project_name = ?`,
+          [it.short_description.trim() || null, it.long_description.trim() || null, lineId, it.project_name],
+          conn,
+        );
+      }
+    });
+  } catch (e) {
+    return fail(e);
+  }
+  refresh();
+  return { ok: true };
+}
+
 // ------------------------------------------------------------------- team
 
+const PASSWORD_MIN = 8;
+
+/**
+ * A team member is an account: name, email and password. Adding one lets them
+ * sign in straight away. Editing can change any of it; a blank password keeps
+ * the current one. (Passwords are stored as bcrypt hashes, never as text.)
+ */
 export async function saveTeamMember(fd: FormData): Promise<ActionResult> {
   await requireUser();
   const id = str(fd, "id");
   const name = str(fd, "name");
-  if (!name) return { ok: false, error: "Name is required." };
+  const email = str(fd, "email").toLowerCase();
+  const password = String(fd.get("password") ?? "");
+  const active = fd.get("active") !== null;
 
-  const payload = {
-    name,
-    email: nullable(fd, "email"),
-    active: fd.get("active") !== null,
-  };
+  if (!name) return { ok: false, error: "Name is required." };
+  const badEmail = check(email, max(255), isEmail);
+  if (!email || badEmail) return { ok: false, error: badEmail ?? "Email is required — they sign in with it." };
+  if (!id && !password) return { ok: false, error: "Set a password for the new account." };
+  if (password && password.length < PASSWORD_MIN) {
+    return { ok: false, error: `Use at least ${PASSWORD_MIN} characters for the password.` };
+  }
+  if (password.length > 200) return { ok: false, error: "That password is too long." };
+  const hash = password ? await bcrypt.hash(password, 10) : null;
+
   try {
-    if (id) await updateById("team_members", id, payload);
-    else await insert("team_members", payload);
+    await transaction(async (conn) => {
+      const existing = id
+        ? await row<{ user_id: string | null }>("SELECT user_id FROM team_members WHERE id = ?", [id], conn)
+        : null;
+      if (id && !existing) throw new Error("That team member doesn't exist.");
+
+      let userId = existing?.user_id ?? null;
+      if (userId) {
+        await updateById("users", userId, { email, name, ...(hash ? { password_hash: hash } : {}) }, conn);
+      } else if (hash) {
+        // The member row is written below; don't let the database add another.
+        await conn.query("SET @importing = 1");
+        try {
+          userId = await insert("users", { email, password_hash: hash, name }, conn);
+        } finally {
+          await conn.query("SET @importing = 0");
+        }
+      }
+
+      const member = { name, email, active, user_id: userId };
+      if (id) await updateById("team_members", id, member, conn);
+      else await insert("team_members", member, conn);
+    });
   } catch (e) {
-    return fail(e);
+    return fail(e, "Another account already uses that email.");
   }
   refresh();
   return { ok: true };
@@ -1049,10 +1125,17 @@ export async function setTeamMemberActive(id: string, active: boolean): Promise<
   return { ok: true };
 }
 
+/** Removes the member and their account (only someone with nothing assigned). */
 export async function deleteTeamMember(id: string): Promise<ActionResult> {
-  await requireUser();
+  const me = await requireUser();
+  const member = await row<{ user_id: string | null }>("SELECT user_id FROM team_members WHERE id = ?", [id]);
+  if (!member) return { ok: false, error: "That team member doesn't exist." };
+  if (member.user_id === me.userId) return { ok: false, error: "You can't delete your own account." };
   try {
-    await exec("DELETE FROM team_members WHERE id = ?", [id]);
+    await transaction(async (conn) => {
+      await exec("DELETE FROM team_members WHERE id = ?", [id], conn);
+      if (member.user_id) await exec("DELETE FROM users WHERE id = ?", [member.user_id], conn);
+    });
   } catch (e) {
     return fail(e);
   }
@@ -1183,6 +1266,24 @@ function intakeProblem(fields: Record<string, string | undefined>, owner?: strin
  * token decides which client it is, and only these fields are saved. The same
  * rules as the form are checked again here, so nothing skips them.
  */
+/**
+ * Read a client's website (from the intake form) and hand back the business
+ * details we could find, for the client to check. Public, like the form itself.
+ */
+export async function autofillIntake(
+  token: string,
+  website: string,
+): Promise<{ ok: true; data: Prefill } | { ok: false; error: string }> {
+  // Only run for a real, unsubmitted intake link — not as an open fetch proxy.
+  if (!token || token.length < 24) return { ok: false, error: "This link is no longer valid." };
+  const client = await row<{ id: string }>(
+    "SELECT id FROM clients WHERE intake_token = ? AND archived = FALSE",
+    [token],
+  );
+  if (!client) return { ok: false, error: "This link is no longer valid." };
+  return prefillFromWebsite(website);
+}
+
 export async function submitIntake(
   token: string,
   client: Record<string, string>,

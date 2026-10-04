@@ -18,7 +18,7 @@ import { CopyButton } from "@/components/CopyButton";
 import { Spinner } from "@/components/Spinner";
 import { StoreIcon } from "@/components/StoreIcon";
 import { ProjectLogo } from "@/components/ProjectLogo";
-import { submitIntake } from "@/lib/actions";
+import { autofillIntake, submitIntake } from "@/lib/actions";
 import { APP_STORE_LIMITS, PLAY_LIMITS, displayName } from "@/lib/constants";
 import {
   check,
@@ -174,7 +174,49 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
 
+  // Read the client's website and fill the business fields we can find.
+  const [filling, startFill] = useTransition();
+  const [fillNote, setFillNote] = useState<{ ok: boolean; text: string } | null>(null);
+  function autofill() {
+    setFillNote(null);
+    startFill(async () => {
+      const res = await autofillIntake(token, biz.website);
+      if (!res.ok) {
+        setFillNote({ ok: false, text: res.error });
+        return;
+      }
+      const d = res.data;
+      let filled = 0;
+      setBiz((b) => {
+        const next = { ...b };
+        next.website = d.website || next.website;
+        // Only fill blanks, so anything the client already typed is kept.
+        const put = (key: string, value?: string) => {
+          if (value && !next[key]?.trim()) {
+            next[key] = value;
+            filled++;
+          }
+        };
+        put("email", d.email);
+        put("phone", d.phone);
+        put("privacy", d.privacy);
+        if (hasPlay) put("deleteAccount", d.deleteAccount);
+        if (hasIos) {
+          put("support", d.support);
+          put("contact", form.name); // the review contact is the client themselves
+        }
+        return next;
+      });
+      setFillNote(
+        filled > 0
+          ? { ok: true, text: "Filled what we found from your website — please check each field below." }
+          : { ok: true, text: "Nothing new to fill — the fields below already have values." },
+      );
+    });
+  }
+
   const setB = (k: string) => (v: string) => {
+    setFillNote(null);
     setBiz((b) => ({ ...b, [k]: v }));
     setDirty(true);
   };
@@ -592,10 +634,51 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                     ))}
                   </div>
                 ) : current.key === "business" ? (
+                  <div className="space-y-4">
+                    <div className="rounded-lg border border-border bg-muted/40 p-3">
+                      <label htmlFor="autofill-website" className="label">
+                        Have a website? Fill this in for you
+                      </label>
+                      <p className="mb-2 text-[11px] text-muted-foreground">
+                        Paste your website and we&apos;ll read your contact details and policy pages
+                        from it. You can edit everything afterwards.
+                      </p>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <input
+                          id="autofill-website"
+                          type="url"
+                          value={biz.website}
+                          onChange={(e) => setB("website")(e.target.value)}
+                          placeholder="https://yourcompany.com"
+                          className="field flex-1"
+                        />
+                        <button
+                          type="button"
+                          onClick={autofill}
+                          disabled={filling || !biz.website.trim()}
+                          className="btn btn-primary shrink-0"
+                        >
+                          {filling ? (
+                            <>
+                              <Spinner /> Reading…
+                            </>
+                          ) : (
+                            "Auto-fill from website"
+                          )}
+                        </button>
+                      </div>
+                      {fillNote && (
+                        <p
+                          className={`mt-2 text-[12px] ${fillNote.ok ? "text-good" : "text-bad"}`}
+                        >
+                          {fillNote.text}
+                        </p>
+                      )}
+                    </div>
+
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Input label="Support email" type="email" vkey="biz.email" value={biz.email} onChange={setB("email")} placeholder="support@yourcompany.com" />
                     <Input label="Support phone" type="tel" vkey="biz.phone" value={biz.phone} onChange={setB("phone")} placeholder="+1 555 010 0199" />
-                    <Input label="Website" optional type="url" vkey="biz.website" value={biz.website} onChange={setB("website")} placeholder="https://yourcompany.com" wide />
                     <Input
                       label="Privacy policy link"
                       type="url"
@@ -640,13 +723,33 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                       </>
                     )}
                   </div>
+                  </div>
                 ) : (
                   (() => {
                     const i = groups.findIndex((x) => x.key === current.key);
                     const g = groups[i];
                     const a = apps[i];
+                    // The product line's ready-made store listing for this app role.
+                    const std = g.indexes
+                      .map((k) => form.apps[k])
+                      .find((x) => x.std_short || x.std_long);
+                    const useStandard = () => {
+                      if (std?.std_short && g.play !== undefined) setA(i, "short")(std.std_short);
+                      if (std?.std_long) setA(i, "description")(std.std_long);
+                    };
                     return (
                       <div className="grid gap-4 sm:grid-cols-2">
+                        {std && (
+                          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 p-3 sm:col-span-2">
+                            <p className="text-[12px] text-muted-foreground">
+                              We have a ready-made {g.line} description for this app. Use it as a
+                              starting point and edit anything you like.
+                            </p>
+                            <button type="button" onClick={useStandard} className="btn btn-secondary shrink-0">
+                              Use the standard {g.line} description
+                            </button>
+                          </div>
+                        )}
                         <Input label="App name" vkey={`app.${i}.name`} value={a.name} onChange={setA(i, "name")} max={Math.min(APP_STORE_LIMITS.appName, PLAY_LIMITS.appName)} wide />
                         {g.play !== undefined && (
                           <Input

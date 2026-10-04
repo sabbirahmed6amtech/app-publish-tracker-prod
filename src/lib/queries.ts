@@ -97,7 +97,11 @@ export function sortProducts(products: Product[]): Product[] {
  * `cache` collapses them into a single round trip.
  */
 export const getTeam = cache(async function getTeam(): Promise<TeamMember[]> {
-  return rows<TeamMember>("SELECT * FROM team_members ORDER BY name");
+  return rows<TeamMember>(
+    `SELECT m.*, u.email AS login_email
+       FROM team_members m LEFT JOIN users u ON u.id = m.user_id
+      ORDER BY m.name`,
+  );
 });
 
 /** Only active members belong in the assignment pickers. */
@@ -302,6 +306,25 @@ export const getProductLines = cache(async function getProductLines(): Promise<P
   }));
 });
 
+export type LineProjectDescription = {
+  project_name: string;
+  short_description: string | null;
+  long_description: string | null;
+};
+
+/** Each line's projects with their generic store descriptions, for Settings. */
+export const lineDescriptions = cache(async function lineDescriptions(): Promise<
+  Record<string, LineProjectDescription[]>
+> {
+  const list = await rows<{ line_id: string } & LineProjectDescription>(
+    `SELECT line_id, project_name, short_description, long_description
+       FROM product_line_projects ORDER BY sort_order, project_name`,
+  );
+  const out: Record<string, LineProjectDescription[]> = {};
+  for (const { line_id, ...rest } of list) (out[line_id] ??= []).push(rest);
+  return out;
+});
+
 /** project name -> its line's name and logo, for badges anywhere an app shows. */
 export function lineBadges(lines: ProductLine[]): Record<string, LineBadge> {
   const out: Record<string, LineBadge> = {};
@@ -485,7 +508,8 @@ export async function intakeForm(token: string): Promise<Intake | null> {
               p.ios_subtitle, p.ios_keywords, p.ios_promo_text, p.ios_primary_category,
               p.ios_secondary_category, p.ios_copyright, p.publishing_countries,
               p.feature_graphic_url, p.screenshots_url, p.icon_url, p.client_note,
-              pl.name AS line, pl.logo_path
+              pl.name AS line, pl.logo_path,
+              plp.short_description AS std_short, plp.long_description AS std_long
          FROM products p
          JOIN publisher_accounts pa ON pa.id = p.account_id
          LEFT JOIN product_line_projects plp ON plp.project_name = p.project_name

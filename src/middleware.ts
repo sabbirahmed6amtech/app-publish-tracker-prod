@@ -4,7 +4,14 @@ import { readSession, SESSION_COOKIE } from "@/lib/session";
 // Open without signing in: the login page, the public status tracker, the
 // client form (both reach only what their link allows), product-line logos,
 // and the Store Watch cron (it brings its own key).
-const PUBLIC_PATHS = ["/login", "/track", "/intake", "/uploads/logos/", "/api/store-watch"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/track",
+  "/intake",
+  "/uploads/logos/",
+  "/api/store-watch",
+  "/api/auth/signout",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

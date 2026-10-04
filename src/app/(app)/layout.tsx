@@ -2,7 +2,8 @@ import { Sidebar, type SidebarClient } from "@/components/Sidebar";
 import { TopBar, type SearchItem } from "@/components/TopBar";
 import { NewClientWizard } from "@/components/dialogs/NewClientWizard";
 import { PageContainer } from "@/components/PageContainer";
-import { getSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getSession, SIGN_OUT_PATH } from "@/lib/auth";
 import {
   getClients,
   getProductLines,
@@ -16,6 +17,9 @@ import { releaseState } from "@/lib/constants";
 export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  // The middleware checked the cookie; this checks the login behind it still exists.
+  if (!(await getSession())) redirect(SIGN_OUT_PATH);
+
   let clients: SidebarClient[] = [];
   let search: SearchItem[] = [];
   let lines: ProductLine[] = [];

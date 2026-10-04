@@ -1,13 +1,18 @@
-import { PlusIcon } from "lucide-react";
+import { FileTextIcon, PlusIcon } from "lucide-react";
 import { DeleteButton } from "@/components/RowActions";
 import { ProjectLogo } from "@/components/ProjectLogo";
 import { ProductLineDialog } from "@/components/dialogs/ProductLineDialog";
-import { getClients, getProductLines } from "@/lib/queries";
+import { ProductLineDescriptionsDialog } from "@/components/dialogs/ProductLineDescriptionsDialog";
+import { getClients, getProductLines, lineDescriptions } from "@/lib/queries";
 import { deleteProductLine } from "@/lib/actions";
 
 /** The product lines the team sells, their projects and logos. */
 export async function ProductLinesSettings() {
-  const [lines, clients] = await Promise.all([getProductLines(), getClients()]);
+  const [lines, clients, descriptions] = await Promise.all([
+    getProductLines(),
+    getClients(),
+    lineDescriptions(),
+  ]);
 
   // How many client apps use each project, so the list shows what's in use.
   const usage = new Map<string, number>();
@@ -56,6 +61,15 @@ export async function ProductLinesSettings() {
                       {!line.logo_url && " · no logo yet"}
                     </p>
                   </div>
+                  <ProductLineDescriptionsDialog
+                    line={{ id: line.id, name: line.name }}
+                    projects={descriptions[line.id] ?? []}
+                    trigger={
+                      <>
+                        <FileTextIcon className="size-3.5" /> Descriptions
+                      </>
+                    }
+                  />
                   <ProductLineDialog line={line} trigger="Edit" className="btn btn-ghost h-7 px-2" />
                   <DeleteButton
                     label="✕"

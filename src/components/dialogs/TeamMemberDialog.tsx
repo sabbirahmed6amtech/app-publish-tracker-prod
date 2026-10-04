@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { Spinner } from "@/components/Spinner";
 import { saveTeamMember } from "@/lib/actions";
 import type { TeamMember } from "@/lib/types";
 
+/** A team member's account: name, email and password. */
 export function TeamMemberDialog({
   member,
   trigger,
@@ -20,6 +22,9 @@ export function TeamMemberDialog({
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const [show, setShow] = useState(false);
+  const editing = !!member;
+  const hasAccount = !!member?.user_id;
 
   function submit(fd: FormData) {
     setError(null);
@@ -33,15 +38,22 @@ export function TeamMemberDialog({
 
   return (
     <>
-      <button className={className} onClick={() => setOpen(true)}>
+      <button
+        className={className}
+        onClick={() => {
+          setError(null);
+          setShow(false);
+          setOpen(true);
+        }}
+      >
         {trigger}
       </button>
 
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={member ? "Edit member" : "Add member"}
-        subtitle="Someone work can be assigned to."
+        title={editing ? "Edit member" : "Add member"}
+        subtitle="They sign in with this email and password."
         width="max-w-md"
       >
         <form action={submit}>
@@ -50,7 +62,7 @@ export function TeamMemberDialog({
 
             <div>
               <label className="label" htmlFor="member-name">
-                Display name
+                Name
               </label>
               <input
                 id="member-name"
@@ -64,19 +76,50 @@ export function TeamMemberDialog({
 
             <div>
               <label className="label" htmlFor="member-email">
-                Email <span className="font-normal normal-case">(optional)</span>
+                Email
               </label>
               <input
                 id="member-email"
                 name="email"
                 type="email"
-                defaultValue={member?.email ?? ""}
+                required
+                autoComplete="off"
+                defaultValue={member?.login_email ?? member?.email ?? ""}
                 placeholder="name@example.com"
                 className="field"
               />
-              {member?.user_id && (
+            </div>
+
+            <div>
+              <label className="label" htmlFor="member-password">
+                {hasAccount ? "New password" : "Password"}
+                {hasAccount && (
+                  <span className="ml-1 font-normal text-muted-foreground">(leave blank to keep)</span>
+                )}
+              </label>
+              <div className="relative">
+                <input
+                  id="member-password"
+                  name="password"
+                  type={show ? "text" : "password"}
+                  required={!editing}
+                  minLength={8}
+                  autoComplete="new-password"
+                  placeholder="At least 8 characters"
+                  className="field pr-9"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow((v) => !v)}
+                  aria-label={show ? "Hide password" : "Show password"}
+                  className="absolute right-1.5 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:text-foreground"
+                >
+                  {show ? <EyeOffIcon className="size-3.5" /> : <EyeIcon className="size-3.5" />}
+                </button>
+              </div>
+              {editing && !hasAccount && (
                 <p className="mt-1 text-[11px] text-muted-foreground">
-                  Linked to a login. Changing this does not change how they sign in.
+                  No password yet — set one to let them sign in.
                 </p>
               )}
             </div>
@@ -92,9 +135,7 @@ export function TeamMemberDialog({
             </label>
 
             {error && (
-              <p className="rounded-md bg-bad-soft px-2.5 py-2 text-[12px] text-bad">
-                {error}
-              </p>
+              <p className="rounded-md bg-bad-soft px-2.5 py-2 text-[12px] text-bad">{error}</p>
             )}
           </div>
 
@@ -107,8 +148,10 @@ export function TeamMemberDialog({
                 <>
                   <Spinner /> Saving…
                 </>
-              ) : (
+              ) : editing ? (
                 "Save member"
+              ) : (
+                "Add member"
               )}
             </button>
           </div>

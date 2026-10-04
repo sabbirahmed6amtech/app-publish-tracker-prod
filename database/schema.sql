@@ -259,6 +259,12 @@ CREATE TABLE product_line_projects (
   line_id      CHAR(36)     NOT NULL,
   project_name VARCHAR(191) NOT NULL,          -- matches products.project_name
   sort_order   INT          NOT NULL DEFAULT 0,
+
+  -- Generic store listing a client can one-click into the intake form, written
+  -- once per app role (6amMart User app, Store app, Delivery app …).
+  short_description VARCHAR(255) NULL,         -- Play short description (limit 80)
+  long_description  TEXT         NULL,         -- full description (limit 4000)
+
   created_at   DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (id),
   UNIQUE KEY product_line_projects_project_key (project_name),
