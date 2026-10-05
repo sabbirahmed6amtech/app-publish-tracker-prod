@@ -176,7 +176,7 @@ export function ReleaseView({
                 <th className="th">App</th>
                 <th className="th">Status</th>
                 <th className="th">Assigned to</th>
-                <th className="th">Build number</th>
+                <th className="th">Build version</th>
                 <th className="th">Note</th>
                 <th className="th w-0" />
               </tr>
@@ -291,7 +291,7 @@ export function ReleaseView({
                           appId={app.id}
                           field="build_version"
                           value={app.build_version}
-                          placeholder="Add build number"
+                          placeholder="Add build version"
                           mono
                           className="w-36"
                         />

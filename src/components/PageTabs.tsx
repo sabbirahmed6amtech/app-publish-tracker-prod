@@ -14,7 +14,7 @@ export function PageTabs({
   tabs: { key: string; label: string; count?: number }[];
 }) {
   return (
-    <nav className="mb-5 flex gap-1 overflow-x-auto border-b" aria-label="Sections">
+    <nav className="mb-5 flex flex-wrap gap-1 border-b" aria-label="Sections">
       {tabs.map((t, i) => {
         const active = t.key === current;
         const href = i === 0 ? base : `${base}?tab=${t.key}`;

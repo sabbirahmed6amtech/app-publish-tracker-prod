@@ -388,7 +388,7 @@ function Table({
           <Th label="App name" sortKey="app" />
           <Th label="Assigned to" sortKey="person" />
           <Th label="Status" sortKey="status" />
-          <Th label="Build number" />
+          <Th label="Build version" />
           <th className="th text-right">Link</th>
         </tr>
       </thead>
@@ -451,7 +451,7 @@ function Table({
                 appId={r.id}
                 field="build_version"
                 value={r.build_version}
-                placeholder="Add build number"
+                placeholder="Add build version"
                 mono
                 className="w-36"
               />

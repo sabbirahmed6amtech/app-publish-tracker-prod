@@ -7,7 +7,13 @@ import { toast } from "sonner";
 import { checkStoreNow } from "@/lib/actions";
 
 /** Look this app up on its store now, instead of waiting for the hourly check. */
-export function StoreCheckButton({ productId }: { productId: string }) {
+export function StoreCheckButton({
+  productId,
+  onNavigate,
+}: {
+  productId: string;
+  onNavigate?: () => void;
+}) {
   const router = useRouter();
   const [pending, start] = useTransition();
   return (
@@ -17,7 +23,21 @@ export function StoreCheckButton({ productId }: { productId: string }) {
       onClick={() =>
         start(async () => {
           const res = await checkStoreNow(productId);
-          if (!res.ok) return void toast.error(res.error);
+          if (!res.ok) {
+            if (res.needsPackageName && res.clientId) {
+              const clientId = res.clientId;
+              return void toast.error(res.error, {
+                action: {
+                  label: "Add it",
+                  onClick: () => {
+                    onNavigate?.();
+                    router.push(`/clients/${clientId}?tab=apps`);
+                  },
+                },
+              });
+            }
+            return void toast.error(res.error);
+          }
           toast.success("Checked the store");
           router.refresh();
         })

@@ -173,7 +173,7 @@ export function AppPreviewSheet({
           {app.app_name || null}
         </Field>
         <Field label="Assigned to">{assigneeName}</Field>
-        <Field label="Build number" copy={app.build_version ?? undefined} mono>
+        <Field label="Build version" copy={app.build_version ?? undefined} mono>
           {app.build_version}
         </Field>
         <Field label="Flutter version" copy={app.flutter_version ?? undefined} mono>
@@ -212,7 +212,7 @@ export function AppPreviewSheet({
                 </p>
               )}
             </div>
-            <StoreCheckButton productId={app.product_id} />
+            <StoreCheckButton productId={app.product_id} onNavigate={onClose} />
           </div>
         </Field>
         <Field label="Metadata">

@@ -491,3 +491,10 @@ body {
     @apply font-sans;
   }
 }
+
+[data-sonner-toaster] {
+  pointer-events: none;
+}
+[data-sonner-toast] {
+  pointer-events: auto;
+}

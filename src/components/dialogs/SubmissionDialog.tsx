@@ -101,7 +101,7 @@ export function SubmissionDialog({
               </div>
               <div>
                 <label className="label" htmlFor="sub-build">
-                  Build number
+                  Build version
                 </label>
                 <input
                   id="sub-build"

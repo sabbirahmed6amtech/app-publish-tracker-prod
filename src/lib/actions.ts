@@ -1388,10 +1388,20 @@ export async function submitIntake(
 // -------------------------------------------------------------- store watch
 
 /** Look one app up on its store right now (the hourly check does the rest). */
-export async function checkStoreNow(productId: string): Promise<ActionResult> {
+export async function checkStoreNow(
+  productId: string,
+): Promise<ActionResult & { needsPackageName?: boolean; clientId?: string }> {
   await requireUser();
   const [result] = await runStoreWatch({ productId });
-  if (!result) return { ok: false, error: "This app has no package name or bundle ID to look up." };
+  if (!result) {
+    const p = await row<{ client_id: string }>("SELECT client_id FROM products WHERE id = ?", [productId]);
+    return {
+      ok: false,
+      error: "This app has no package name or bundle ID yet.",
+      needsPackageName: true,
+      clientId: p?.client_id,
+    };
+  }
   if (result.error) return { ok: false, error: result.error };
   refresh();
   return { ok: true };
