@@ -205,9 +205,7 @@ export function ReleaseView({
                     <AppPreviewRow
                       key={app.id}
                       app={app}
-                      accountLabel={`${PLATFORMS[platform].label} — ${
-                        account?.account_name || "unnamed account"
-                      }`}
+                      accountName={account?.account_name || "unnamed account"}
                       assigneeName={(app.assigned_to && names.get(app.assigned_to)) || null}
                       keystore={(app.keystore_id && keystoreById.get(app.keystore_id)) || null}
                       images={imagesOf(products.find((p) => p.id === app.product_id))}

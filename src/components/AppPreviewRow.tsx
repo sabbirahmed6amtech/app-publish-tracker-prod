@@ -10,6 +10,7 @@ import { formatDate, PLATFORMS, STATUSES } from "@/lib/constants";
 import { ImageIcon } from "lucide-react";
 import type { AppImages } from "@/lib/appImages";
 import { StoreCheckButton } from "@/components/StoreCheckButton";
+import { StoreIcon } from "@/components/StoreIcon";
 import { liveButNotMoved, timeAgo, type StoreInfo } from "@/lib/storeWatch";
 import type { App, Keystore, Platform } from "@/lib/types";
 
@@ -22,7 +23,7 @@ const INTERACTIVE = "a, button, input, select, textarea, label, [data-modal]";
  */
 export function AppPreviewRow({
   app,
-  accountLabel,
+  accountName,
   assigneeName,
   keystore,
   images = null,
@@ -34,7 +35,7 @@ export function AppPreviewRow({
   children,
 }: {
   app: App;
-  accountLabel: string;
+  accountName: string;
   assigneeName: string | null;
   keystore: Keystore | null;
   images?: AppImages | null;
@@ -69,7 +70,7 @@ export function AppPreviewRow({
         open={open}
         onClose={close}
         app={app}
-        accountLabel={accountLabel}
+        accountName={accountName}
         assigneeName={assigneeName}
         keystore={keystore}
         images={images}
@@ -87,7 +88,7 @@ export function AppPreviewSheet({
   open,
   onClose,
   app,
-  accountLabel,
+  accountName,
   assigneeName,
   keystore,
   images = null,
@@ -99,7 +100,7 @@ export function AppPreviewSheet({
   open: boolean;
   onClose: () => void;
   app: App;
-  accountLabel: string;
+  accountName: string;
   assigneeName: string | null;
   keystore: Keystore | null;
   /** Links the client shared; the developer downloads and uploads them by hand. */
@@ -159,7 +160,12 @@ export function AppPreviewSheet({
         <Field label="Status">
           <StatusChip status={app.status} since={app.status_changed_at} />
         </Field>
-        <Field label="Published to">{accountLabel}</Field>
+        <Field label="Published to" copy={accountName || undefined}>
+          <span className="flex min-w-0 items-center gap-1.5">
+            {platform && <StoreIcon platform={platform} size={14} />}
+            <span className="truncate">{accountName}</span>
+          </span>
+        </Field>
         <Field label="Project" copy={app.project_name}>
           {app.project_name}
         </Field>

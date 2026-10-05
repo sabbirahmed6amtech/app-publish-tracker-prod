@@ -459,9 +459,7 @@ export function StatusBoard({
           open
           onClose={() => setPreviewId(null)}
           app={{ ...preview, status: statusOf(preview) }}
-          accountLabel={`${PLATFORMS[preview.platform].label} — ${
-            preview.account_name || "unnamed account"
-          }`}
+          accountName={preview.account_name || "unnamed account"}
           assigneeName={preview.assignee_name}
           keystore={(preview.keystore_id && keystoreById.get(preview.keystore_id)) || null}
           images={images[preview.product_id] ?? null}
