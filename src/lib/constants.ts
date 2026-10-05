@@ -211,6 +211,23 @@ export function releaseState(apps: Pick<App, "status">[]): ReleaseState {
   return "in_progress";
 }
 
+export function releaseLabel(release: {
+  title?: string | null;
+  started_on?: string | null;
+  version?: string | null;
+}): string {
+  const title = release.title?.trim();
+  if (title) return title;
+  if (release.started_on) return formatReleaseDate(release.started_on);
+  return release.version?.trim() || "Untitled";
+}
+
+export function formatReleaseDate(date: string): string {
+  const d = new Date(`${date.slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return date;
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+}
+
 /** Suggest a next version from what the client already shipped. */
 export function suggestNextVersion(existing: string[]): string {
   const numeric = existing

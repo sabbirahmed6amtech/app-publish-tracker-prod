@@ -82,7 +82,7 @@ export function AppsTable({
       return [
         r.ticket,
         r.client_name,
-        r.release_version,
+        r.release_label,
         r.account_name,
         r.project_name,
         r.app_name,
@@ -99,7 +99,7 @@ export function AppsTable({
     const value = (r: AppRow) => {
       switch (sort.key) {
         case "client":
-          return `${r.client_name} ${r.release_version} ${String(r.sort_order).padStart(3, "0")}`;
+          return `${r.client_name} ${r.release_label} ${String(r.sort_order).padStart(3, "0")}`;
         case "project":
           return r.project_name;
         case "app":
@@ -329,7 +329,7 @@ function GroupCard({
             href={`/releases/${head.release_id}`}
             className="text-[14px] font-semibold text-foreground hover:underline"
           >
-            {head.client_name} · v{head.release_version}
+            {head.client_name} · {head.release_label}
           </Link>
           <span className="ml-2 font-mono text-[11px] text-muted-foreground/80">#{head.ticket}</span>
           <div className="mt-0.5 truncate text-[12px] text-muted-foreground">
@@ -407,7 +407,7 @@ function Table({
                   {r.client_name}
                 </Link>
                 <span className="ml-1.5 text-[11px] text-muted-foreground/80">
-                  v{r.release_version}
+                  {r.release_label}
                 </span>
               </td>
             )}

@@ -23,12 +23,7 @@ import {
 import { removeUpload, safeFileName, saveUpload } from "@/lib/uploads";
 import { runStoreWatch } from "@/lib/storeWatchRun";
 import { prefillFromWebsite, type Prefill } from "@/lib/intakePrefill";
-import {
-  APP_STORE_LIMITS,
-  PLAY_LIMITS,
-  bumpBuild,
-  suggestNextVersion,
-} from "@/lib/constants";
+import { APP_STORE_LIMITS, PLAY_LIMITS, bumpBuild } from "@/lib/constants";
 import type { AccountType, AppStatus, Platform } from "@/lib/types";
 import {
   check,
@@ -254,17 +249,10 @@ export async function saveRelease(fd: FormData): Promise<ActionResult> {
   await requireUser();
   const id = str(fd, "id");
   const client_id = str(fd, "client_id");
-  const version = str(fd, "version");
 
-  if (!version) return { ok: false, error: "Version is required." };
-
-  // Whoever owns the release owns its apps by default. The checkbox is the
-  // intent, so this runs on every save it is ticked for — that is what lets
-  // you repair a release whose apps drifted out of step with its owner.
   const cascade = fd.get("cascade_assignee") !== null;
   const payload = {
     client_id,
-    version,
     title: nullable(fd, "title"),
     assigned_to: nullable(fd, "assigned_to"),
     note: nullable(fd, "note"),
@@ -278,7 +266,7 @@ export async function saveRelease(fd: FormData): Promise<ActionResult> {
       await exec("UPDATE apps SET assigned_to = ? WHERE release_id = ?", [payload.assigned_to, savedId]);
     }
   } catch (e) {
-    return fail(e, `This client already has a release ${version}.`);
+    return fail(e);
   }
   refresh();
   return { ok: true, id: savedId };
@@ -358,17 +346,44 @@ async function submitProducts(
   );
 }
 
-/**
- * The one-click way to begin a release: next version, assigned to whoever
- * clicked, with every one of the client's active apps submitted as "ongoing".
- */
 export async function startNewRelease(clientId: string): Promise<ActionResult> {
   await requireUser();
-  const [releases, products, me] = await Promise.all([
-    rows<{ version: string }>("SELECT version FROM releases WHERE client_id = ?", [clientId]),
+  const [products, me] = await Promise.all([
     rows<{ id: string }>("SELECT id FROM products WHERE client_id = ? AND archived = FALSE", [clientId]),
     getCurrentMemberId(),
   ]);
+  try {
+    const id = await transaction(async (conn) => {
+      const releaseId = await insert(
+        "releases",
+        { client_id: clientId, assigned_to: me, started_on: today() },
+        conn,
+      );
+      await submitProducts(releaseId, products.map((p) => p.id), me, conn);
+      return releaseId;
+    });
+    refresh();
+    return { ok: true, id };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function createRound(fd: FormData): Promise<ActionResult> {
+  await requireUser();
+  const clientId = str(fd, "client_id");
+  if (!clientId) return { ok: false, error: "Missing client." };
+
+  const assignedTo = nullable(fd, "assigned_to") ?? (await getCurrentMemberId());
+  const productIds = fd.getAll("products").map(String).filter(Boolean);
+  if (productIds.length === 0) return { ok: false, error: "Pick at least one app for this round." };
+
+  const owned = await rows<{ id: string }>(
+    `SELECT id FROM products WHERE client_id = ? AND archived = FALSE AND id IN (${placeholders(productIds.length)})`,
+    [clientId, ...productIds],
+  );
+  const ids = owned.map((p) => p.id);
+  if (ids.length === 0) return { ok: false, error: "Those apps don't belong to this client." };
 
   try {
     const id = await transaction(async (conn) => {
@@ -376,13 +391,13 @@ export async function startNewRelease(clientId: string): Promise<ActionResult> {
         "releases",
         {
           client_id: clientId,
-          version: suggestNextVersion(releases.map((r) => r.version)),
-          assigned_to: me,
-          started_on: today(),
+          title: nullable(fd, "title"),
+          assigned_to: assignedTo,
+          started_on: str(fd, "started_on") || today(),
         },
         conn,
       );
-      await submitProducts(releaseId, products.map((p) => p.id), me, conn);
+      await submitProducts(releaseId, ids, assignedTo, conn);
       return releaseId;
     });
     refresh();
@@ -1380,4 +1395,24 @@ export async function checkStoreNow(productId: string): Promise<ActionResult> {
   if (result.error) return { ok: false, error: result.error };
   refresh();
   return { ok: true };
+}
+
+export async function syncAllStores(): Promise<
+  | { ok: true; checked: number; live: number; updated: number; errors: number }
+  | { ok: false; error: string }
+> {
+  await requireUser();
+  try {
+    const results = await runStoreWatch({ all: true });
+    refresh();
+    return {
+      ok: true,
+      checked: results.length,
+      live: results.filter((r) => r.live).length,
+      updated: results.filter((r) => r.adopted).length,
+      errors: results.filter((r) => r.error).length,
+    };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
 }

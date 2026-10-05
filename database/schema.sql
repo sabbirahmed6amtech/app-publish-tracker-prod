@@ -100,12 +100,12 @@ CREATE TABLE publisher_accounts (
   CONSTRAINT publisher_accounts_client_id_fkey FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- One versioned release for one client.
+-- One round of publishing work for a client, labelled by title or start date.
 CREATE TABLE releases (
   id          CHAR(36)     NOT NULL DEFAULT (UUID()),
   client_id   CHAR(36)     NOT NULL,
-  version     VARCHAR(64)  NOT NULL,          -- 1.1.0, 4.1, 8.4 …
-  title       VARCHAR(255) NULL,              -- optional label: "Rental module"
+  version     VARCHAR(64)  NULL,
+  title       VARCHAR(255) NULL,
   assigned_to CHAR(36)     NULL,
   note        TEXT         NULL,
   started_on  DATE         NOT NULL DEFAULT (CURRENT_DATE),
@@ -113,7 +113,7 @@ CREATE TABLE releases (
   created_at  DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   updated_at  DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (id),
-  UNIQUE KEY releases_client_version_key (client_id, version),
+  KEY releases_client_id_idx (client_id),
   CONSTRAINT releases_client_id_fkey   FOREIGN KEY (client_id)   REFERENCES clients (id)      ON DELETE CASCADE,
   CONSTRAINT releases_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES team_members (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

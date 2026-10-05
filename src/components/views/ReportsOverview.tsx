@@ -16,6 +16,7 @@ import {
   PLATFORMS,
   RELEASE_STATES,
   STATUSES,
+  releaseLabel,
   STATUS_ORDER,
   daysSince,
   formatDate,
@@ -135,7 +136,7 @@ export async function ReportsOverview() {
                       <span className={`size-2 shrink-0 rounded-full ${RELEASE_STATES[state].dot}`} />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-medium text-foreground">
-                          {client.name} · v{release.version}
+                          {client.name} · {releaseLabel(release)}
                         </div>
                         <div className="truncate text-[11px] text-muted-foreground">
                           {(release.assigned_to && names.get(release.assigned_to)) || "Unassigned"} ·{" "}
@@ -238,7 +239,7 @@ function QueueCard({
                     {r.app_name || r.project_name}
                   </div>
                   <div className="truncate text-[11px] text-muted-foreground">
-                    {r.client_name} · v{r.release_version} · {PLATFORMS[r.platform].label}
+                    {r.client_name} · {r.release_label} · {PLATFORMS[r.platform].label}
                     {r.assignee_name ? ` · ${r.assignee_name}` : ""}
                     {r.note ? ` · ${r.note}` : ""}
                   </div>

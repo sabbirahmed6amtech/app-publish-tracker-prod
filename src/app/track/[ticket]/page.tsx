@@ -128,8 +128,7 @@ function Overview({
       {
         ticket,
         clientName: name,
-        version: release.version,
-        title: release.title,
+        label: release.label,
         note: null,
         apps: release.apps.map((a, i) => ({
           platform: a.platform,
@@ -159,9 +158,8 @@ function Overview({
             </span>
           </div>
           <p className="mt-1 text-[13px] text-muted-foreground">
-            Ticket <span className="font-mono">#{ticket}</span> · Version{" "}
-            <span className="font-medium text-foreground">{release.version}</span>
-            {release.title ? ` · ${release.title}` : ""} ·{" "}
+            Ticket <span className="font-mono">#{ticket}</span> ·{" "}
+            <span className="font-medium text-foreground">{release.label}</span> ·{" "}
             {release.released_on
               ? `Live since ${formatDate(release.released_on)}`
               : `Started ${formatDate(release.started_on)}`}
@@ -327,9 +325,8 @@ function PastReleases({ releases }: { releases: TrackerRelease[] }) {
         {releases.map((r) => {
           const live = r.apps.filter((a) => a.status === "production").length;
           return (
-            <li key={r.version} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3">
-              <span className="text-[14px] font-semibold">Version {r.version}</span>
-              {r.title && <span className="text-[13px] text-muted-foreground">{r.title}</span>}
+            <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3">
+              <span className="text-[14px] font-semibold">{r.label}</span>
               <span className="flex items-center gap-1" aria-hidden>
                 {r.apps.map((a, i) => (
                   <StatusGlyph key={i} status={a.status} size={10} />
@@ -385,8 +382,8 @@ function Activity({ items }: { items: TrackerClient["activity"] }) {
                     ? `${STATUSES[e.from].label} → ${STATUSES[e.to].label}`
                     : e.to
                       ? STATUSES[e.to].label
-                      : "Updated"}{" "}
-                  · v{e.version}
+                      : "Updated"}
+                  {e.version ? ` · v${e.version}` : ""}
                 </p>
                 <p className="text-[11px] text-muted-foreground">{ago(e.at)}</p>
               </div>

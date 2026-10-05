@@ -7,14 +7,13 @@ import { DeleteButton } from "@/components/RowActions";
 import { CopyButton } from "@/components/CopyButton";
 import { StatusChip } from "@/components/StatusChip";
 import { ReleaseView } from "@/components/ReleaseView";
-import { NewReleaseButton } from "@/components/NewReleaseButton";
 import { ArchiveToggle } from "@/components/ArchiveToggle";
 import { ProjectLogo } from "@/components/ProjectLogo";
 import { StoreIcon } from "@/components/StoreIcon";
 import { KeystoreDownloadButton } from "@/components/KeystoreDownloadButton";
 import { ClientDialog } from "@/components/dialogs/ClientDialog";
 import { AccountDialog } from "@/components/dialogs/AccountDialog";
-import { ReleaseDialog } from "@/components/dialogs/ReleaseDialog";
+import { NewRoundDialog, type RoundApp } from "@/components/dialogs/NewRoundDialog";
 import { KeystoreDialog } from "@/components/dialogs/KeystoreDialog";
 import { ProductDialog } from "@/components/dialogs/ProductDialog";
 import { ListingDialog } from "@/components/dialogs/ListingDialog";
@@ -44,13 +43,29 @@ import {
   PLATFORMS,
   RELEASE_STATES,
   formatDate,
+  releaseLabel,
   releaseState,
 } from "@/lib/constants";
+import { expectedVersion } from "@/lib/storeWatch";
 import type { App, ClientFull, ProductLine, TeamMember } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 const TABS = ["overview", "apps", "releases", "credentials"] as const;
+
+function roundAppsFor(client: ClientFull, lines: ProductLine[]): RoundApp[] {
+  const badges = lineBadges(lines);
+  const accountById = new Map(client.publisher_accounts.map((a) => [a.id, a]));
+  return client.products
+    .filter((p) => !p.archived)
+    .map((p) => ({
+      id: p.id,
+      name: p.app_name || p.project_name,
+      project: p.project_name,
+      platform: accountById.get(p.account_id)?.platform ?? "play_store",
+      badge: badges[p.project_name],
+    }));
+}
 
 export default async function ClientPage({
   params,
@@ -108,20 +123,12 @@ export default async function ClientPage({
             submittedAt={client.intake_submitted_at}
           />
           <ClientDialog client={client} trigger="Edit" className="btn btn-secondary" />
-          <ReleaseDialog
+          <NewRoundDialog
             clientId={client.id}
-            existingVersions={client.releases.map((r) => r.version)}
+            apps={roundAppsFor(client, lines)}
             team={activeMembers(roster)}
-            copyableReleases={client.releases.map((r) => ({
-              id: r.id,
-              version: r.version,
-              appCount: r.apps.length,
-            }))}
-            trigger="Custom release…"
-            className="btn btn-secondary"
             defaultOpen={query.new === "release"}
           />
-          <NewReleaseButton clientId={client.id} />
         </div>
       </header>
 
@@ -144,7 +151,7 @@ export default async function ClientPage({
         <OverviewTab client={client} roster={roster} lines={lines} suggestions={suggestions} />
       )}
       {tab === "apps" && <AppsTab client={client} lines={lines} suggestions={suggestions} />}
-      {tab === "releases" && <ReleasesTab client={client} roster={roster} />}
+      {tab === "releases" && <ReleasesTab client={client} roster={roster} lines={lines} />}
       {tab === "credentials" && <CredentialsTab client={client} />}
 
       {tab === "overview" && current && (
@@ -207,7 +214,7 @@ function OverviewTab({
       <EmptyState
         title="No release yet"
         body="Start one to submit this client's apps. It's assigned to you, and every app starts as Ongoing."
-        action={<NewReleaseButton clientId={client.id} />}
+        action={<NewRoundDialog clientId={client.id} apps={roundAppsFor(client, lines)} team={activeMembers(roster)} />}
       />
     );
   }
@@ -429,8 +436,8 @@ function AppsTab({
                                 accountName={accountById.get(p.account_id)?.account_name ?? ""}
                                 mode={isFirstPublish(p, everLive) ? "publish" : "update"}
                                 version={
-                                  client.releases.find((r) => r.id === latest.get(p.id)?.release_id)
-                                    ?.version
+                                  expectedVersion(latest.get(p.id)?.build_version ?? null, null) ||
+                                  undefined
                                 }
                               />
                             </>
@@ -461,15 +468,29 @@ function AppsTab({
   );
 }
 
-function ReleasesTab({ client, roster }: { client: ClientFull; roster: TeamMember[] }) {
+function ReleasesTab({
+  client,
+  roster,
+  lines,
+}: {
+  client: ClientFull;
+  roster: TeamMember[];
+  lines: ProductLine[];
+}) {
   const names = teamIndex(roster);
 
   if (client.releases.length === 0) {
     return (
       <EmptyState
         title="No releases yet"
-        body="Each release you start shows up here with its version, owner and outcome."
-        action={<NewReleaseButton clientId={client.id} />}
+        body="Each release you start shows up here with its title or date, owner and outcome."
+        action={
+          <NewRoundDialog
+            clientId={client.id}
+            apps={roundAppsFor(client, lines)}
+            team={activeMembers(roster)}
+          />
+        }
       />
     );
   }
@@ -487,9 +508,8 @@ function ReleasesTab({ client, roster }: { client: ClientFull; roster: TeamMembe
                 className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 hover:bg-muted/40"
               >
                 <span className={`size-2 shrink-0 rounded-full ${RELEASE_STATES[state].dot}`} />
-                <span className="text-[14px] font-semibold">Version {r.version}</span>
+                <span className="text-[14px] font-semibold">{releaseLabel(r)}</span>
                 {i === 0 && <Tag>Current</Tag>}
-                {r.title && <span className="text-[13px] text-muted-foreground">{r.title}</span>}
                 <span className="ml-auto flex items-center gap-4 text-[12px] text-muted-foreground">
                   <span>{(r.assigned_to && names.get(r.assigned_to)) || "Unassigned"}</span>
                   <span>

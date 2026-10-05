@@ -16,7 +16,7 @@ export type ClientCard = {
   totalApps: number;
   latest: {
     id: string;
-    version: string;
+    label: string;
     state: ReleaseState;
     assignee: string | null;
     date: string;
@@ -34,7 +34,7 @@ export function ClientsList({ clients }: { clients: ClientCard[] }) {
         c.ticket,
         c.name,
         ...c.accounts.map((a) => `${a.label} ${a.accountName}`),
-        c.latest?.version ?? "",
+        c.latest?.label ?? "",
         c.latest?.assignee ?? "",
       ]
         .join(" ")
@@ -110,7 +110,7 @@ export function ClientsList({ clients }: { clients: ClientCard[] }) {
                     <span className="text-right">
                       <span className="flex items-center justify-end gap-1.5 text-[13px] font-medium text-foreground">
                         <span className={`size-2 rounded-full ${RELEASE_STATES[c.latest.state].dot}`} />
-                        v{c.latest.version}
+                        {c.latest.label}
                       </span>
                       <span className="text-[11px] text-muted-foreground/80">
                         {c.latest.assignee ? `${c.latest.assignee} · ` : ""}

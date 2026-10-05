@@ -1,11 +1,12 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBoard } from "@/components/StatusBoard";
+import { SyncStoresButton } from "@/components/SyncStoresButton";
 import { imagesOf, type AppImages } from "@/lib/appImages";
 import { everLiveProducts, isFirstPublish } from "@/lib/publish";
 import { storeInfoOf, type StoreInfo } from "@/lib/storeWatch";
 import {
   activeMembers,
-  flatten,
+  flattenLatest,
   getClients,
   getCurrentMemberId,
   getProductLines,
@@ -24,13 +25,14 @@ export default async function MyWorkPage() {
     getCurrentMemberId(),
     getProductLines(),
   ]);
-  const rows = flatten(clients, teamIndex(roster));
+  const rows = flattenLatest(clients, teamIndex(roster));
 
   return (
     <>
       <PageHeader
         title="My work"
         meta="Drag a card to change its status. Click it for details and credentials."
+        actions={<SyncStoresButton />}
       />
       <StatusBoard
         rows={rows}

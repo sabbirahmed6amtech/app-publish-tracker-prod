@@ -162,7 +162,7 @@ export type Keystore = {
 export type Release = {
   id: string;
   client_id: string;
-  version: string;
+  version: string | null;
   title: string | null;
   assigned_to: string | null;
   note: string | null;
@@ -223,8 +223,10 @@ export type AppRow = App & {
   client_id: string;
   ticket: string;
   client_name: string;
-  release_version: string;
+  release_version: string | null;
   release_title: string | null;
+  release_label: string;
+  release_started_on: string;
   release_note: string | null;
   /** Resolved display names, so tables and CSV do not each re-join. */
   assignee_name: string | null;

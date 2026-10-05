@@ -12,7 +12,7 @@ import {
   teamIndex,
 } from "@/lib/queries";
 import type { ProductLine } from "@/lib/types";
-import { releaseState } from "@/lib/constants";
+import { releaseLabel, releaseState } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -46,8 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       platforms: [...new Set(c.publisher_accounts.map((a) => a.platform))],
       releases: c.releases.map((r) => ({
         id: r.id,
-        version: r.version,
-        title: r.title,
+        label: releaseLabel(r),
         assignedTo: (r.assigned_to && names.get(r.assigned_to)) || null,
         appCount: r.apps.length,
         liveCount: r.apps.filter((a) => a.status === "production").length,
@@ -65,7 +64,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       ...c.releases.map((r) => ({
         id: r.id,
         kind: "release" as const,
-        label: `${c.name} · v${r.version}`,
+        label: `${c.name} · ${releaseLabel(r)}`,
         sub: `${r.apps.length} apps`,
         href: `/releases/${r.id}`,
       })),

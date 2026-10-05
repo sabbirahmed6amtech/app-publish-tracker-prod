@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { placeholders, row, rows } from "@/lib/db";
 import { logoUrl } from "@/lib/uploads";
-import { STATUS_ORDER } from "@/lib/constants";
+import { STATUS_ORDER, releaseLabel } from "@/lib/constants";
 import { everLiveProducts } from "@/lib/publish";
 import type {
   App,
@@ -76,7 +76,7 @@ function sortTree(c: ClientFull): ClientFull {
   c.products = sortProducts(c.products ?? []);
   // Newest release first — that is the one being worked on.
   c.releases = (c.releases ?? []).sort(
-    (a, b) => b.started_on.localeCompare(a.started_on) || b.version.localeCompare(a.version),
+    (a, b) => b.started_on.localeCompare(a.started_on) || b.created_at.localeCompare(a.created_at),
   );
   for (const r of c.releases) {
     r.apps = (r.apps ?? []).sort(
@@ -170,7 +170,7 @@ export const getRelease = cache(async function getRelease(
     products: sortProducts(products),
     everLive: [...everLiveProducts(statuses)],
     siblings: siblings.sort(
-      (a, b) => b.started_on.localeCompare(a.started_on) || b.version.localeCompare(a.version),
+      (a, b) => b.started_on.localeCompare(a.started_on) || b.created_at.localeCompare(a.created_at),
     ),
   };
 });
@@ -195,6 +195,8 @@ export function flatten(clients: ClientFull[], names?: Map<string, string>): App
           client_name: c.name,
           release_version: release.version,
           release_title: release.title,
+          release_label: releaseLabel(release),
+          release_started_on: release.started_on,
           release_note: release.note,
           assignee_name: nameOf(app.assigned_to),
           release_assignee_name: nameOf(release.assigned_to),
@@ -206,6 +208,19 @@ export function flatten(clients: ClientFull[], names?: Map<string, string>): App
     }
   }
   return rows;
+}
+
+export function flattenLatest(clients: ClientFull[], names?: Map<string, string>): AppRow[] {
+  const archived = new Set<string>();
+  for (const c of clients) for (const p of c.products) if (p.archived) archived.add(p.id);
+
+  const latest = new Map<string, AppRow>();
+  for (const r of flatten(clients, names)) {
+    if (archived.has(r.product_id)) continue;
+    const prev = latest.get(r.product_id);
+    if (!prev || r.created_at > prev.created_at) latest.set(r.product_id, r);
+  }
+  return [...latest.values()];
 }
 
 export type Stats = {
@@ -361,11 +376,11 @@ export type TrackerApp = {
 };
 
 export type TrackerRelease = {
-  version: string;
+  id: string;
+  label: string;
   title: string | null;
   started_on: string;
   released_on: string | null;
-  /** Who is running this release — display name only. */
   assignee: string | null;
   apps: TrackerApp[];
 };
@@ -377,7 +392,7 @@ export type TrackerClient = {
   activity: {
     app: string;
     platform: Platform;
-    version: string;
+    version: string | null;
     from: AppStatus | null;
     to: AppStatus | null;
     at: string;
@@ -426,7 +441,7 @@ export async function trackerClient(ticket: string): Promise<TrackerClient | nul
     `SELECT r.id, r.version, r.title, r.started_on, r.released_on, m.name AS assignee
        FROM releases r LEFT JOIN team_members m ON m.id = r.assigned_to
       WHERE r.client_id = ?
-      ORDER BY r.started_on DESC, r.version DESC
+      ORDER BY r.started_on DESC, r.created_at DESC
       LIMIT 12`,
     [client.id],
   );
@@ -450,7 +465,8 @@ export async function trackerClient(ticket: string): Promise<TrackerClient | nul
     : [];
 
   const activity = await rows<TrackerClient["activity"][number]>(
-    `SELECT COALESCE(NULLIF(a.app_name, ''), a.project_name) AS app, pa.platform, r.version,
+    `SELECT COALESCE(NULLIF(a.app_name, ''), a.project_name) AS app, pa.platform,
+            NULLIF(SUBSTRING_INDEX(a.build_version, '+', 1), '') AS version,
             e.from_status AS \`from\`, e.to_status AS \`to\`, e.created_at AS at
        FROM app_events e
        JOIN apps a ON a.id = e.app_id
@@ -465,8 +481,13 @@ export async function trackerClient(ticket: string): Promise<TrackerClient | nul
   return {
     ticket: client.ticket,
     name: client.name,
-    releases: releases.map(({ id, ...r }) => ({
-      ...r,
+    releases: releases.map(({ id, version, ...r }) => ({
+      id,
+      label: releaseLabel({ title: r.title, started_on: r.started_on, version }),
+      title: r.title,
+      started_on: r.started_on,
+      released_on: r.released_on,
+      assignee: r.assignee,
       apps: apps
         .filter((a) => a.release_id === id)
         .map(({ release_id: _r, logo_path, ...a }) => ({ ...a, logo: logoUrl(logo_path) })),

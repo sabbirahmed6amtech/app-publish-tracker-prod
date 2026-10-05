@@ -8,7 +8,7 @@ import {
   projectSuggestions,
   teamIndex,
 } from "@/lib/queries";
-import { PLATFORMS, releaseState } from "@/lib/constants";
+import { PLATFORMS, releaseLabel, releaseState } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +40,7 @@ export default async function ClientsPage() {
       latest: latest
         ? {
             id: latest.id,
-            version: latest.version,
+            label: releaseLabel(latest),
             state: releaseState(latest.apps),
             assignee: (latest.assigned_to && names.get(latest.assigned_to)) || null,
             date: latest.released_on ?? latest.started_on,

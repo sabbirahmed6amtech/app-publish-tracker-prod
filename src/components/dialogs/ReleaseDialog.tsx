@@ -4,54 +4,35 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { Spinner } from "@/components/Spinner";
-import { copyAppsFromRelease, saveRelease } from "@/lib/actions";
-import { suggestNextVersion } from "@/lib/constants";
+import { saveRelease } from "@/lib/actions";
 import type { Release, TeamMember } from "@/lib/types";
 
 export function ReleaseDialog({
   clientId,
   release,
-  existingVersions,
   team,
-  copyableReleases = [],
   appCount = 0,
   trigger,
-  className = "btn btn-primary",
-  defaultOpen = false,
+  className = "btn btn-secondary",
 }: {
   clientId: string;
-  release?: Release;
-  existingVersions: string[];
+  release: Release;
   team: TeamMember[];
-  copyableReleases?: { id: string; version: string; appCount: number }[];
   appCount?: number;
   trigger: string;
   className?: string;
-  defaultOpen?: boolean;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
-  const suggested = release?.version ?? suggestNextVersion(existingVersions);
-
   function submit(fd: FormData) {
     setError(null);
-    const copyFrom = String(fd.get("copy_from") ?? "");
-
     start(async () => {
       const res = await saveRelease(fd);
       if (!res.ok) return setError(res.error);
-
-      // A new release usually ships the same apps as the last one.
-      if (!release && copyFrom && res.id) {
-        const copied = await copyAppsFromRelease(copyFrom, res.id);
-        if (!copied.ok) return setError(copied.error);
-      }
-
       setOpen(false);
-      if (!release && res.id) router.push(`/releases/${res.id}`);
       router.refresh();
     });
   }
@@ -65,42 +46,26 @@ export function ReleaseDialog({
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={release ? `Edit version ${release.version}` : "New release"}
-        subtitle="One versioned release for this client."
+        title="Edit release"
+        subtitle="A round of work for this client."
         width="max-w-lg"
       >
         <form action={submit}>
           <div className="space-y-3 px-5 py-4">
-            <input type="hidden" name="id" defaultValue={release?.id ?? ""} />
+            <input type="hidden" name="id" defaultValue={release.id} />
             <input type="hidden" name="client_id" defaultValue={clientId} />
-            {!release && <input type="hidden" name="cascade_assignee" value="on" />}
 
-            <div className="grid grid-cols-[130px_1fr] gap-3">
-              <div>
-                <label className="label" htmlFor="version">
-                  Version
-                </label>
-                <input
-                  id="version"
-                  name="version"
-                  required
-                  defaultValue={suggested}
-                  placeholder="1.1.0"
-                  className="field font-mono"
-                />
-              </div>
-              <div>
-                <label className="label" htmlFor="title">
-                  Title <span className="font-normal normal-case">(optional)</span>
-                </label>
-                <input
-                  id="title"
-                  name="title"
-                  defaultValue={release?.title ?? ""}
-                  placeholder="Short label"
-                  className="field"
-                />
-              </div>
+            <div>
+              <label className="label" htmlFor="title">
+                Title <span className="font-normal normal-case">(optional)</span>
+              </label>
+              <input
+                id="title"
+                name="title"
+                defaultValue={release.title ?? ""}
+                placeholder="Leave blank to label by date"
+                className="field"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -111,7 +76,7 @@ export function ReleaseDialog({
                 <select
                   id="assigned_to"
                   name="assigned_to"
-                  defaultValue={release?.assigned_to ?? ""}
+                  defaultValue={release.assigned_to ?? ""}
                   className="field"
                 >
                   <option value="">Unassigned</option>
@@ -130,13 +95,13 @@ export function ReleaseDialog({
                   id="started_on"
                   name="started_on"
                   type="date"
-                  defaultValue={release?.started_on ?? new Date().toISOString().slice(0, 10)}
+                  defaultValue={release.started_on}
                   className="field"
                 />
               </div>
             </div>
 
-            {release && appCount > 0 && (
+            {appCount > 0 && (
               <label className="flex cursor-pointer select-none items-start gap-2 rounded-md bg-muted/50 px-3 py-2 text-[13px] text-foreground/85">
                 <input
                   type="checkbox"
@@ -145,34 +110,12 @@ export function ReleaseDialog({
                   className="mt-0.5 size-3.5 accent-foreground"
                 />
                 <span>
-                  Also assign the {appCount} {appCount === 1 ? "app" : "apps"} in this
-                  release
+                  Also assign the {appCount} {appCount === 1 ? "app" : "apps"} in this release
                   <span className="mt-0.5 block text-[11px] text-muted-foreground">
                     Uncheck to keep per-app assignments as they are.
                   </span>
                 </span>
               </label>
-            )}
-
-            {!release && copyableReleases.length > 0 && (
-              <div>
-                <label className="label" htmlFor="copy_from">
-                  Start from
-                </label>
-                <select id="copy_from" name="copy_from" defaultValue="" className="field">
-                  <option value="">Empty — add apps myself</option>
-                  {copyableReleases
-                    .filter((r) => r.appCount > 0)
-                    .map((r) => (
-                      <option key={r.id} value={r.id}>
-                        Copy the {r.appCount} apps from version {r.version}
-                      </option>
-                    ))}
-                </select>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  Copies the app list and store accounts across, each one reset to Ongoing.
-                </p>
-              </div>
             )}
 
             <div>
@@ -183,16 +126,14 @@ export function ReleaseDialog({
                 id="release-note"
                 name="note"
                 rows={2}
-                defaultValue={release?.note ?? ""}
-                placeholder="What changed in this release."
+                defaultValue={release.note ?? ""}
+                placeholder="What changed in this round."
                 className="field resize-none"
               />
             </div>
 
             {error && (
-              <p className="rounded-md bg-bad-soft px-2.5 py-2 text-[12px] text-bad">
-                {error}
-              </p>
+              <p className="rounded-md bg-bad-soft px-2.5 py-2 text-[12px] text-bad">{error}</p>
             )}
           </div>
 
@@ -205,10 +146,8 @@ export function ReleaseDialog({
                 <>
                   <Spinner /> Saving…
                 </>
-              ) : release ? (
-                "Save release"
               ) : (
-                "Create release"
+                "Save"
               )}
             </button>
           </div>

@@ -10,20 +10,19 @@ import {
   KanbanIcon,
   LogOutIcon,
   MenuIcon,
+  PlusIcon,
   SettingsIcon,
   type LucideIcon,
 } from "lucide-react";
 import { PLATFORMS, RELEASE_STATES } from "@/lib/constants";
 import { signOut } from "@/lib/actions";
-import { NewReleaseButton } from "@/components/NewReleaseButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StoreIcon } from "@/components/StoreIcon";
 import type { Platform, ReleaseState } from "@/lib/types";
 
 export type SidebarRelease = {
   id: string;
-  version: string;
-  title: string | null;
+  label: string;
   assignedTo: string | null;
   appCount: number;
   liveCount: number;
@@ -244,7 +243,7 @@ function ReleaseRail({
             >
               <div className="flex items-center gap-2">
                 <span className={`size-2 shrink-0 rounded-full ${meta.dot}`} />
-                <span className="truncate text-[13px] font-medium">Version {r.version}</span>
+                <span className="truncate text-[13px] font-medium">{r.label}</span>
               </div>
               <div className="mt-0.5 truncate pl-4 text-[11px] text-muted-foreground">
                 {r.appCount === 0
@@ -258,7 +257,9 @@ function ReleaseRail({
       </div>
 
       <div className="border-t px-3 py-2.5">
-        <NewReleaseButton clientId={client.id} className="btn btn-secondary w-full" />
+        <Link href={`/clients/${client.id}?new=release`} className="btn btn-secondary w-full">
+          <PlusIcon className="size-4" /> New release
+        </Link>
       </div>
     </>
   );

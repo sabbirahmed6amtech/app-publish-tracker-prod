@@ -37,6 +37,24 @@ export function expectedVersion(buildVersion: string | null, releaseVersion: str
   return (buildVersion?.split("+")[0] || releaseVersion || "").trim();
 }
 
+function versionParts(value: string | null | undefined): number[] | null {
+  const name = String(value ?? "").split("+")[0].trim();
+  if (!/^\d+(\.\d+)*$/.test(name)) return null;
+  return name.split(".").map(Number);
+}
+
+export function compareVersions(a: string | null, b: string | null): number | null {
+  const pa = versionParts(a);
+  const pb = versionParts(b);
+  if (!pa || !pb) return null;
+  const n = Math.max(pa.length, pb.length);
+  for (let i = 0; i < n; i += 1) {
+    const diff = (pa[i] ?? 0) - (pb[i] ?? 0);
+    if (diff !== 0) return diff < 0 ? -1 : 1;
+  }
+  return 0;
+}
+
 /**
  * The store already has this submission live, but the tracker doesn't say so
  * yet — the developer should move it to Production. Nothing moves on its own.

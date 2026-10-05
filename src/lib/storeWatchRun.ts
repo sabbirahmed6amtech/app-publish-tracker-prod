@@ -1,4 +1,5 @@
 import { rows, updateById } from "@/lib/db";
+import { compareVersions } from "@/lib/storeWatch";
 
 /**
  * Store Watch: is each app live on its store, and which version? Looks apps up
@@ -50,30 +51,42 @@ async function checkAppStore(bundleId: string): Promise<Found> {
   };
 }
 
-export type StoreWatchResult = { id: string; store: string; live?: boolean; version?: string | null; error?: string };
+export type StoreWatchResult = {
+  id: string;
+  store: string;
+  live?: boolean;
+  version?: string | null;
+  adopted?: string;
+  error?: string;
+};
 
-export async function runStoreWatch(options: { productId?: string } = {}): Promise<StoreWatchResult[]> {
-  const { productId } = options;
+export async function runStoreWatch(
+  options: { productId?: string; all?: boolean } = {},
+): Promise<StoreWatchResult[]> {
+  const { productId, all } = options;
   const products = await rows<{
     id: string;
     package_name: string;
     store_url: string | null;
     platform: "play_store" | "app_store";
     latest_status: string | null;
+    latest_app_id: string | null;
+    latest_build: string | null;
   }>(
     `SELECT p.id, p.package_name, p.store_url, pa.platform,
-            (SELECT a.status FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_status
+            (SELECT a.status FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_status,
+            (SELECT a.id FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_app_id,
+            (SELECT a.build_version FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_build
        FROM products p JOIN publisher_accounts pa ON pa.id = p.account_id
       WHERE p.package_name IS NOT NULL AND TRIM(p.package_name) <> ''
         AND ${productId ? "p.id = ?" : "p.archived = FALSE"}`,
     productId ? [productId] : [],
   );
 
-  // "Check now" on one app always runs; the schedule only checks running apps —
-  // submitted at least once, and the latest isn't in Production.
-  const due = productId
-    ? products
-    : products.filter((p) => p.latest_status && p.latest_status !== "production");
+  const due =
+    productId || all
+      ? products
+      : products.filter((p) => p.latest_status && p.latest_status !== "production");
 
   const results: StoreWatchResult[] = [];
   for (const [i, p] of due.entries()) {
@@ -90,7 +103,19 @@ export async function runStoreWatch(options: { productId?: string } = {}): Promi
         store_error: null,
         ...(found.live && found.url && !p.store_url?.trim() ? { store_url: found.url } : {}),
       });
-      results.push({ id: p.id, store: p.platform, live: found.live, version: found.version });
+
+      let adopted: string | undefined;
+      const storeName = found.version?.split("+")[0].trim();
+      if (found.live && storeName && p.latest_app_id) {
+        const ahead = p.latest_build ? compareVersions(storeName, p.latest_build) === 1 : true;
+        const current = p.latest_build?.split("+")[0].trim();
+        if (ahead && storeName !== current) {
+          await updateById("apps", p.latest_app_id, { build_version: storeName });
+          adopted = storeName;
+        }
+      }
+
+      results.push({ id: p.id, store: p.platform, live: found.live, version: found.version, adopted });
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       await updateById("products", p.id, { store_checked_at: now, store_error: message });

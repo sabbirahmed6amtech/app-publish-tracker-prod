@@ -49,8 +49,7 @@ export type ReportApp = {
 export type ReportInput = {
   ticket: string;
   clientName: string;
-  version: string;
-  title: string | null;
+  label: string;
   note: string | null;
   apps: ReportApp[];
 };
@@ -73,12 +72,7 @@ export function buildReport(inputs: ReportInput[], lineNames: string[] = []): st
     .map((input) => {
       const lines: string[] = [`### ${input.ticket} - ${input.clientName}`];
 
-      // Optional detail line: version, title and note, when there is one.
-      const details = [
-        `v${input.version}`,
-        input.title ?? "",
-        input.note ?? "",
-      ]
+      const details = [input.label, input.note ?? ""]
         .map((s) => s.trim())
         .filter(Boolean)
         .join(" — ");
@@ -125,8 +119,7 @@ export function reportFromRows(rows: AppRow[], lineNames: string[] = []): string
       group = {
         ticket: r.ticket,
         clientName: r.client_name,
-        version: r.release_version,
-        title: r.release_title,
+        label: r.release_label,
         note: r.release_note,
         apps: [],
       };

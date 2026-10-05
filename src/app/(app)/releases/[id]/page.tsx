@@ -12,6 +12,7 @@ import {
   lineBadges,
 } from "@/lib/queries";
 import { deleteRelease } from "@/lib/actions";
+import { releaseLabel } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +71,7 @@ export default async function ReleasePage({
           Releases
         </Link>
         <ChevronRightIcon className="size-3.5" />
-        <span className="text-foreground">Version {release.version}</span>
+        <span className="text-foreground">{releaseLabel(release)}</span>
         {isCurrent && (
           <span className="ml-1.5 rounded-md border bg-card px-1.5 text-[11px]">Current</span>
         )}
@@ -100,12 +101,12 @@ export default async function ReleasePage({
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
         <p className="text-[12px] text-muted-foreground">
-          Deleting version {release.version} removes its {apps.length} submissions and their
+          Deleting {releaseLabel(release)} removes its {apps.length} submissions and their
           history. The client and its apps stay.
         </p>
         <DeleteButton
           label="Delete release"
-          confirmText={`Delete version ${release.version} and its ${apps.length} submissions?`}
+          confirmText={`Delete ${releaseLabel(release)} and its ${apps.length} submissions?`}
           action={async () => {
             "use server";
             return deleteRelease(release.id);

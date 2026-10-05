@@ -5,7 +5,7 @@ import { AppPreviewRow } from "@/components/AppPreviewRow";
 import { imagesOf } from "@/lib/appImages";
 import { DrawerPublishButton } from "@/components/PublishPanel";
 import { isFirstPublish } from "@/lib/publish";
-import { liveButNotMoved, storeInfoOf, timeAgo } from "@/lib/storeWatch";
+import { expectedVersion, liveButNotMoved, storeInfoOf, timeAgo } from "@/lib/storeWatch";
 import { InlineAssignee, InlineText } from "@/components/InlineEdit";
 import { ReleaseDialog } from "@/components/dialogs/ReleaseDialog";
 import { SubmissionDialog } from "@/components/dialogs/SubmissionDialog";
@@ -21,6 +21,7 @@ import {
   daysSince,
   formatDate,
   isStale,
+  releaseLabel,
   releaseState,
 } from "@/lib/constants";
 import type {
@@ -105,8 +106,7 @@ export function ReleaseView({
       {
         ticket: client.ticket,
         clientName: client.name,
-        version: release.version,
-        title: release.title,
+        label: releaseLabel(release),
         note: release.note,
         apps: rows
           .filter((a) => accountById.has(a.account_id))
@@ -129,10 +129,7 @@ export function ReleaseView({
       <div className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-[15px] font-semibold">Version {release.version}</h2>
-            {release.title && (
-              <span className="text-[13px] text-muted-foreground">{release.title}</span>
-            )}
+            <h2 className="text-[15px] font-semibold">{releaseLabel(release)}</h2>
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${RELEASE_STATES[state].chip}`}
             >
@@ -155,7 +152,6 @@ export function ReleaseView({
           <ReleaseDialog
             clientId={client.id}
             release={release}
-            existingVersions={siblings.map((r) => r.version)}
             team={team}
             appCount={apps.length}
             trigger="Edit release"
@@ -169,7 +165,7 @@ export function ReleaseView({
           <p className="text-[14px] font-medium">Nothing in this release yet.</p>
           <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
             Use <strong className="font-medium text-foreground">Add apps</strong> to submit this
-            client&apos;s apps in version {release.version}.
+            client&apos;s apps in this round.
           </p>
         </div>
       ) : (
@@ -229,7 +225,7 @@ export function ReleaseView({
                             accountName={account?.account_name ?? ""}
                             badge={badges[app.project_name]}
                             mode={isFirstPublish(product, new Set(everLive)) ? "publish" : "update"}
-                            version={release.version}
+                            version={expectedVersion(app.build_version, release.version) || undefined}
                           />
                         );
                       })()}
@@ -333,7 +329,7 @@ export function ReleaseView({
                           />
                           <DeleteButton
                             label="✕"
-                            confirmText={`Remove ${app.app_name || app.project_name} from version ${release.version}? The app itself stays on the client.`}
+                            confirmText={`Remove ${app.app_name || app.project_name} from ${releaseLabel(release)}? The app itself stays on the client.`}
                             action={async () => {
                               "use server";
                               return deleteApp(app.id);

@@ -7,7 +7,7 @@ import { ChevronRightIcon, ExternalLinkIcon, MoreHorizontalIcon, SearchIcon } fr
 import { toast } from "sonner";
 import { AppPreviewSheet } from "@/components/AppPreviewRow";
 import type { AppImages } from "@/lib/appImages";
-import { liveButNotMoved, timeAgo, type StoreInfo } from "@/lib/storeWatch";
+import { expectedVersion, liveButNotMoved, timeAgo, type StoreInfo } from "@/lib/storeWatch";
 import { DrawerPublishButton } from "@/components/PublishPanel";
 import { StatusMenuItems } from "@/components/RowActions";
 import { StatusGlyph } from "@/components/StatusGlyph";
@@ -173,7 +173,7 @@ export function StatusBoard({
         r.project_name,
         r.client_name,
         r.ticket,
-        r.release_version,
+        r.release_label,
         r.build_version,
       ]
         .filter(Boolean)
@@ -477,7 +477,7 @@ export function StatusBoard({
                 accountName={preview.account_name}
                 badge={badges[preview.project_name]}
                 mode={publishing[preview.product_id].update ? "update" : "publish"}
-                version={preview.release_version}
+                version={expectedVersion(preview.build_version, preview.release_version) || undefined}
               />
             ) : null
           }
@@ -538,7 +538,8 @@ function BoardCard({
             {row.app_name || row.project_name}
           </div>
           <div className="truncate text-[12px] text-muted-foreground">
-            v{row.release_version} · {row.project_name}
+            {row.build_version ? `v${row.build_version.split("+")[0]} · ` : ""}
+            {row.project_name}
           </div>
         </div>
 
