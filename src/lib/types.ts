@@ -324,3 +324,11 @@ export type Intake = {
   accounts: IntakeAccount[];
   apps: IntakeApp[];
 };
+
+export type SupportArticle = {
+  id: string;
+  category: string;
+  title: string;
+  body: string;
+  sort_order: number;
+};

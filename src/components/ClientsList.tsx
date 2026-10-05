@@ -5,12 +5,14 @@ import { useMemo, useState } from "react";
 import { SearchIcon } from "lucide-react";
 import { RELEASE_STATES, formatDate } from "@/lib/constants";
 import { StoreIcon } from "@/components/StoreIcon";
-import type { Platform, ReleaseState } from "@/lib/types";
+import { ProjectLogo } from "@/components/ProjectLogo";
+import type { LineBadge, Platform, ReleaseState } from "@/lib/types";
 
 export type ClientCard = {
   id: string;
   ticket: string;
   name: string;
+  badge: LineBadge | null;
   accounts: { platform: Platform; label: string; accountName: string }[];
   releaseCount: number;
   totalApps: number;
@@ -72,58 +74,76 @@ export function ClientsList({ clients }: { clients: ClientCard[] }) {
           </p>
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {filtered.map((c) => (
-            <Link
-              key={c.id}
-              href={`/clients/${c.id}`}
-              className="card block px-4 py-3.5 transition-colors hover:border-ring/60"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-[15px] font-semibold text-foreground">{c.name}</span>
-                    <span className="font-mono text-[11px] text-muted-foreground/80">#{c.ticket}</span>
-                  </div>
-                  {/* one element per account — joined spaces collapse in HTML
-                      and run two account names together */}
-                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12px] text-muted-foreground">
-                    {c.accounts.length === 0 ? (
-                      <span className="text-muted-foreground/80">No store account yet</span>
-                    ) : (
-                      c.accounts.map((a) => (
-                        <span key={a.platform} className="inline-flex items-center gap-1.5">
-                          <StoreIcon platform={a.platform} size={13} />
-                          <span className="truncate">{a.accountName || "—"}</span>
-                        </span>
-                      ))
-                    )}
-                  </div>
-                </div>
+        <div className="grid gap-2.5 xl:grid-cols-2">
+          {filtered.map((c) => {
+            const state = c.latest ? RELEASE_STATES[c.latest.state] : null;
+            return (
+              <Link
+                key={c.id}
+                href={`/clients/${c.id}`}
+                className="card group flex flex-col gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-ring/60 hover:shadow-md"
+              >
+                <div className="flex items-start gap-3">
+                  {c.badge && <ProjectLogo badge={c.badge} project={c.badge.line} size="md" />}
 
-                <div className="flex shrink-0 items-center gap-5 text-[12px] text-muted-foreground">
-                  <span>
-                    {c.totalApps} {c.totalApps === 1 ? "app" : "apps"} · {c.releaseCount}{" "}
-                    {c.releaseCount === 1 ? "release" : "releases"}
-                  </span>
-                  {c.latest ? (
-                    <span className="text-right">
-                      <span className="flex items-center justify-end gap-1.5 text-[13px] font-medium text-foreground">
-                        <span className={`size-2 rounded-full ${RELEASE_STATES[c.latest.state].dot}`} />
-                        {c.latest.label}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="truncate text-[15px] font-semibold text-foreground">
+                        {c.name}
                       </span>
-                      <span className="text-[11px] text-muted-foreground/80">
-                        {c.latest.assignee ? `${c.latest.assignee} · ` : ""}
-                        {formatDate(c.latest.date)}
+                      <span className="shrink-0 font-mono text-[11px] text-muted-foreground/80">
+                        #{c.ticket}
                       </span>
+                    </div>
+                    <div className="mt-0.5 text-[12px] text-muted-foreground">
+                      {c.totalApps} {c.totalApps === 1 ? "app" : "apps"} · {c.releaseCount}{" "}
+                      {c.releaseCount === 1 ? "release" : "releases"}
+                    </div>
+                  </div>
+
+                  {c.latest && state ? (
+                    <span
+                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium ring-1 ring-inset ${state.chip}`}
+                      title={state.label}
+                    >
+                      <span className={`size-1.5 rounded-full ${state.dot}`} />
+                      {c.latest.label}
                     </span>
                   ) : (
-                    <span className="text-muted-foreground/80">No releases</span>
+                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[12px] text-muted-foreground ring-1 ring-inset ring-border">
+                      No releases
+                    </span>
                   )}
                 </div>
-              </div>
-            </Link>
-          ))}
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {c.accounts.length === 0 ? (
+                    <span className="text-[12px] text-muted-foreground/70">No store account yet</span>
+                  ) : (
+                    c.accounts.map((a) => (
+                      <span
+                        key={a.platform}
+                        className="inline-flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-0.5 text-[12px] text-muted-foreground"
+                      >
+                        <StoreIcon platform={a.platform} size={13} />
+                        <span className="max-w-[180px] truncate">{a.accountName || "—"}</span>
+                      </span>
+                    ))
+                  )}
+                </div>
+
+                {c.latest && (
+                  <div className="flex items-center justify-between border-t pt-2.5 text-[11px] text-muted-foreground/80">
+                    <span>{state?.label}</span>
+                    <span>
+                      {c.latest.assignee ? `${c.latest.assignee} · ` : ""}
+                      {formatDate(c.latest.date)}
+                    </span>
+                  </div>
+                )}
+              </Link>
+            );
+          })}
         </div>
       )}
     </>

@@ -5,10 +5,12 @@ import {
   getClients,
   getProductLines,
   getTeam,
+  lineBadges,
   projectSuggestions,
   teamIndex,
 } from "@/lib/queries";
 import { PLATFORMS, releaseLabel, releaseState } from "@/lib/constants";
+import type { LineBadge } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -22,14 +24,22 @@ export default async function ClientsPage() {
     <NewClientWizard lines={lines} suggestions={projectSuggestions(lines, clients)} />
   );
   const names = teamIndex(roster);
+  const badges = lineBadges(lines);
 
   // Flattened to just what the card renders, so the client bundle stays small.
   const cards: ClientCard[] = clients.map((c) => {
     const latest = c.releases[0];
+    const clientLines = new Map<string, LineBadge>();
+    for (const p of c.products) {
+      if (p.archived) continue;
+      const b = badges[p.project_name];
+      if (b) clientLines.set(b.line, b);
+    }
     return {
       id: c.id,
       ticket: c.ticket,
       name: c.name,
+      badge: clientLines.size === 1 ? [...clientLines.values()][0] : null,
       accounts: c.publisher_accounts.map((a) => ({
         platform: a.platform,
         label: PLATFORMS[a.platform].label,

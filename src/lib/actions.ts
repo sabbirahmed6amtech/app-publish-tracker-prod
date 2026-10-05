@@ -1067,6 +1067,39 @@ export async function saveLineDescriptions(
   return { ok: true };
 }
 
+// ---------------------------------------------------------------- support
+
+export async function saveSupportArticle(fd: FormData): Promise<ActionResult> {
+  await requireUser();
+  const id = str(fd, "id");
+  const category = str(fd, "category") || "General";
+  const title = str(fd, "title");
+  const body = str(fd, "body");
+  if (!title) return { ok: false, error: "Give the entry a title." };
+  if (!body) return { ok: false, error: "Add the solution." };
+
+  const payload = { category, title, body };
+  try {
+    if (id) await updateById("support_articles", id, payload);
+    else await insert("support_articles", payload);
+  } catch (e) {
+    return fail(e);
+  }
+  refresh();
+  return { ok: true };
+}
+
+export async function deleteSupportArticle(id: string): Promise<ActionResult> {
+  await requireUser();
+  try {
+    await exec("DELETE FROM support_articles WHERE id = ?", [id]);
+  } catch (e) {
+    return fail(e);
+  }
+  refresh();
+  return { ok: true };
+}
+
 // ------------------------------------------------------------------- team
 
 const PASSWORD_MIN = 8;

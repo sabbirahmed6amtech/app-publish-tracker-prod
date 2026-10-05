@@ -238,6 +238,19 @@ CREATE TABLE app_events (
   CONSTRAINT app_events_app_id_fkey FOREIGN KEY (app_id) REFERENCES apps (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -------------------------------------------------------------- support ----
+
+CREATE TABLE support_articles (
+  id         CHAR(36)     NOT NULL DEFAULT (UUID()),
+  category   VARCHAR(128) NOT NULL DEFAULT 'General',
+  title      VARCHAR(255) NOT NULL,
+  body       TEXT         NOT NULL,
+  sort_order INT          NOT NULL DEFAULT 0,
+  created_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------- product lines ----
 
 -- A product the team sells (6amMart, StackFood …) and its logo. The logo file

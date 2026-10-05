@@ -8,6 +8,7 @@ import {
   Building2Icon,
   ChartColumnIcon,
   KanbanIcon,
+  LifeBuoyIcon,
   LogOutIcon,
   MenuIcon,
   PlusIcon,
@@ -41,6 +42,7 @@ const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "My work", icon: KanbanIcon },
   { href: "/clients", label: "Clients", icon: Building2Icon },
   { href: "/reports", label: "Reports", icon: ChartColumnIcon },
+  { href: "/support", label: "Support", icon: LifeBuoyIcon },
   { href: "/settings", label: "Settings", icon: SettingsIcon },
 ];
 

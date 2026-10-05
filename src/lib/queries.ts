@@ -20,6 +20,7 @@ import type {
   PublisherAccount,
   Release,
   ReleaseWithApps,
+  SupportArticle,
   TeamMember,
 } from "@/lib/types";
 
@@ -319,6 +320,12 @@ export const getProductLines = cache(async function getProductLines(): Promise<P
     sort_order: l.sort_order,
     projects: projects.filter((p) => p.line_id === l.id).map((p) => p.project_name),
   }));
+});
+
+export const getSupportArticles = cache(async function getSupportArticles(): Promise<SupportArticle[]> {
+  return rows<SupportArticle>(
+    "SELECT id, category, title, body, sort_order FROM support_articles ORDER BY category, sort_order, title",
+  );
 });
 
 export type LineProjectDescription = {
