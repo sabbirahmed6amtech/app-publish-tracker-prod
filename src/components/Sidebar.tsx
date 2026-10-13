@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   ArrowRightIcon,
+  BookOpenIcon,
   Building2Icon,
   ChartColumnIcon,
   KanbanIcon,
@@ -42,6 +43,7 @@ const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "My work", icon: KanbanIcon },
   { href: "/clients", label: "Clients", icon: Building2Icon },
   { href: "/reports", label: "Reports", icon: ChartColumnIcon },
+  { href: "/guide", label: "Guide", icon: BookOpenIcon },
   { href: "/support", label: "Support", icon: LifeBuoyIcon },
   { href: "/settings", label: "Settings", icon: SettingsIcon },
 ];

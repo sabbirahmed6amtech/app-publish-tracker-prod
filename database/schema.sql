@@ -179,6 +179,7 @@ CREATE TABLE products (
   store_updated_at DATETIME(3) NULL,
   store_checked_at DATETIME(3) NULL,
   store_error      TEXT        NULL,
+  store_country    VARCHAR(8)  NULL,
 
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),

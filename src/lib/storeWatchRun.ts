@@ -15,10 +15,22 @@ import { compareVersions } from "@/lib/storeWatch";
  * Production) by the hourly cron, or for one app by "Check now".
  */
 
-type Found = { live: boolean; version: string | null; updatedAt: Date | null; url: string | null };
+type Found = {
+  live: boolean;
+  version: string | null;
+  updatedAt: Date | null;
+  url: string | null;
+  country?: string | null;
+};
 
 const BROWSER =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
+
+const APP_STORE_COUNTRIES = [
+  "US", "SA", "AE", "QA", "KW", "BH", "OM", "EG", "JO", "BD", "PK", "IN",
+  "NG", "GH", "KE", "CI", "SN", "CM", "ZA", "GB", "FR", "DE", "ES", "IT",
+  "CA", "AU", "BR", "MX", "ID", "MY", "SG", "PH", "VN", "TH", "TR",
+];
 
 async function checkPlay(pkg: string): Promise<Found> {
   const url = `https://play.google.com/store/apps/details?id=${encodeURIComponent(pkg)}`;
@@ -33,22 +45,32 @@ async function checkPlay(pkg: string): Promise<Found> {
   return { live: true, version, updatedAt: seconds ? new Date(Number(seconds) * 1000) : null, url };
 }
 
-async function checkAppStore(bundleId: string): Promise<Found> {
-  const res = await fetch(`https://itunes.apple.com/lookup?bundleId=${encodeURIComponent(bundleId)}`, {
-    cache: "no-store",
-  });
+async function lookupAppStore(bundleId: string, country: string): Promise<Found | null> {
+  const res = await fetch(
+    `https://itunes.apple.com/lookup?bundleId=${encodeURIComponent(bundleId)}&country=${country}`,
+    { cache: "no-store" },
+  );
   if (!res.ok) throw new Error(`Apple answered ${res.status}`);
   const data = await res.json();
   const app = data?.results?.[0];
-  if (!app) return { live: false, version: null, updatedAt: null, url: null };
+  if (!app) return null;
   const released = app.currentVersionReleaseDate ?? app.releaseDate ?? null;
   return {
     live: true,
     version: app.version ?? null,
     updatedAt: released ? new Date(released) : null,
-    // Drop Apple's tracking parameters.
     url: typeof app.trackViewUrl === "string" ? app.trackViewUrl.split("?")[0] : null,
+    country,
   };
+}
+
+async function checkAppStore(bundleId: string, preferred?: string | null): Promise<Found> {
+  const order = [...new Set([preferred, ...APP_STORE_COUNTRIES].filter(Boolean) as string[])];
+  for (const country of order) {
+    const found = await lookupAppStore(bundleId, country);
+    if (found) return found;
+  }
+  return { live: false, version: null, updatedAt: null, url: null, country: null };
 }
 
 export type StoreWatchResult = {
@@ -72,8 +94,9 @@ export async function runStoreWatch(
     latest_status: string | null;
     latest_app_id: string | null;
     latest_build: string | null;
+    store_country: string | null;
   }>(
-    `SELECT p.id, p.package_name, p.store_url, pa.platform,
+    `SELECT p.id, p.package_name, p.store_url, p.store_country, pa.platform,
             (SELECT a.status FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_status,
             (SELECT a.id FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_app_id,
             (SELECT a.build_version FROM apps a WHERE a.product_id = p.id ORDER BY a.created_at DESC LIMIT 1) AS latest_build
@@ -94,13 +117,16 @@ export async function runStoreWatch(
     const now = new Date();
     try {
       const found =
-        p.platform === "app_store" ? await checkAppStore(p.package_name.trim()) : await checkPlay(p.package_name.trim());
+        p.platform === "app_store"
+          ? await checkAppStore(p.package_name.trim(), p.store_country)
+          : await checkPlay(p.package_name.trim());
       await updateById("products", p.id, {
         store_live: found.live,
         store_version: found.version,
         store_updated_at: found.updatedAt,
         store_checked_at: now,
         store_error: null,
+        ...(found.live && found.country ? { store_country: found.country } : {}),
         ...(found.live && found.url && !p.store_url?.trim() ? { store_url: found.url } : {}),
       });
 
