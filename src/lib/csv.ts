@@ -2,23 +2,17 @@ import type { AppRow } from "./types";
 import { ACCOUNT_TYPES, PLATFORMS, STATUSES } from "./constants";
 
 export const EXPORT_HEADERS = [
-  "Ticket",
-  "Client",
-  "Release Version",
-  "Release Title",
-  "Assigned To",
+  "Ticket (Client)",
   "Platform",
   "Account Name",
   "Account Type",
   "Project Name",
   "App Name",
   "Status",
-  "Assignee",
-  "Build Version",
+  "Version",
   "Flutter Version",
   "JKS",
   "Note",
-  "Link",
 ] as const;
 
 function escape(value: string): string {
@@ -28,26 +22,36 @@ function escape(value: string): string {
 export function rowsToCsv(rows: AppRow[]): string {
   const lines = [EXPORT_HEADERS.join(",")];
 
-  for (const r of rows) {
+  const sorted = [...rows].sort(
+    (a, b) =>
+      a.ticket.localeCompare(b.ticket, undefined, { numeric: true }) ||
+      a.platform.localeCompare(b.platform) ||
+      a.account_name.localeCompare(b.account_name),
+  );
+
+  let prevClient = "";
+  let prevAccount = "";
+
+  for (const r of sorted) {
+    const accountKey = `${r.client_id}|${r.platform}|${r.account_name}`;
+    const sameClient = r.client_id === prevClient;
+    const sameAccount = sameClient && accountKey === prevAccount;
+    prevClient = r.client_id;
+    prevAccount = accountKey;
+
     lines.push(
       [
-        r.ticket,
-        r.client_name,
-        r.release_version,
-        r.release_title ?? "",
-        r.release_assignee_name ?? "",
-        PLATFORMS[r.platform].label,
-        r.account_name,
+        sameClient ? "" : `${r.ticket} - ${r.client_name}`,
+        sameAccount ? "" : PLATFORMS[r.platform].label,
+        sameAccount ? "" : r.account_name,
         ACCOUNT_TYPES[r.account_type].label,
         r.project_name,
         r.app_name,
         STATUSES[r.status].label,
-        r.assignee_name ?? "",
         r.build_version ?? "",
         r.flutter_version ?? "",
         r.jks ?? "",
         r.note ?? "",
-        r.store_url ?? "",
       ]
         .map((v) => escape(String(v ?? "")))
         .join(","),

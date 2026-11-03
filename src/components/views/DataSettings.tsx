@@ -1,12 +1,14 @@
 import { ImportForm } from "@/components/ImportForm";
 import { ExportButton } from "@/components/ExportButton";
-import { flatten, getClients, getTeam, teamIndex } from "@/lib/queries";
+import { flatten, flattenLatest, getClients, getTeam, teamIndex } from "@/lib/queries";
 import { EXPORT_HEADERS } from "@/lib/csv";
 
 /** Move the old sheet in, or take a snapshot out. */
 export async function DataSettings() {
   const [clients, roster] = await Promise.all([getClients(), getTeam()]);
-  const rows = flatten(clients, teamIndex(roster));
+  const names = teamIndex(roster);
+  const rows = flatten(clients, names);
+  const running = flattenLatest(clients, names).filter((r) => r.status !== "production");
 
   return (
     <>
@@ -14,7 +16,14 @@ export async function DataSettings() {
         <p className="text-[13px] text-muted-foreground">
           Move the old sheet in, or take a snapshot out.
         </p>
-        <ExportButton rows={rows} label={`Export all ${rows.length} apps`} />
+        <div className="flex flex-wrap items-center gap-2">
+          <ExportButton
+            rows={running}
+            label={`Export ${running.length} running apps`}
+            filename="running"
+          />
+          <ExportButton rows={rows} label={`Export all ${rows.length} apps`} />
+        </div>
       </div>
 
       <ImportForm />

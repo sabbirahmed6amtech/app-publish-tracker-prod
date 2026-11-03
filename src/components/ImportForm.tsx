@@ -8,26 +8,30 @@ import { importRows, type ImportRow } from "@/lib/actions";
 import { STATUSES, STATUS_ORDER } from "@/lib/constants";
 import type { AccountType, AppStatus, Platform } from "@/lib/types";
 
-/** Column order, matching the export exactly so a round trip works. */
 const COLUMNS = [
-  "Ticket",
-  "Client",
-  "Release Version",
-  "Release Title",
-  "Assigned To",
+  "Ticket (Client)",
   "Platform",
   "Account Name",
   "Account Type",
   "Project Name",
   "App Name",
   "Status",
-  "Assignee",
-  "Build Version",
+  "Version",
   "Flutter Version",
   "JKS",
   "Note",
-  "Link",
 ];
+
+const PLATFORM_CELL = /^(platform|play|app\s?store|google|android|ios|apple)/i;
+
+function isSheetLayout(first: string[] | undefined): boolean {
+  return !!first && PLATFORM_CELL.test((first[1] ?? "").trim());
+}
+
+function fromSheetRow(c: string[]): string[] {
+  const g = (i: number) => c[i] ?? "";
+  return [g(0), "", "", "", "", g(1), g(2), g(3), g(4), g(5), g(6), "", g(7), g(8), g(9), g(10), ""];
+}
 
 function readPlatform(v: string): Platform {
   return /play|android|google/i.test(v) ? "play_store" : "app_store";
@@ -69,7 +73,9 @@ export function ImportForm() {
     const grid = parseDelimited(text);
     if (grid.length === 0) return { rows: [] as ImportRow[], skipped: 0 };
 
-    const body = hasHeader ? grid.slice(1) : grid;
+    const sheet = isSheetLayout(grid[0]);
+    const lines = sheet ? grid.map(fromSheetRow) : grid;
+    const body = hasHeader ? lines.slice(1) : lines;
     const rows: ImportRow[] = [];
     let skipped = 0;
 
