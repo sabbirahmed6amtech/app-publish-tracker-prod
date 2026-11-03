@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from "lucide-react";
 import { StatusSelect, DeleteButton } from "@/components/RowActions";
 import { CopyReportButton } from "@/components/CopyReportButton";
+import { ExportSourceDialog } from "@/components/dialogs/ExportSourceDialog";
 import { AppPreviewRow } from "@/components/AppPreviewRow";
 import { imagesOf } from "@/lib/appImages";
 import { DrawerPublishButton } from "@/components/PublishPanel";
@@ -148,6 +149,21 @@ export function ReleaseView({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <CopyReportButton report={report} />
+          <ExportSourceDialog
+            clientName={client.name}
+            projects={(() => {
+              // Seed the repo search by product line ("6amMart"), not the
+              // project ("6amMart User"); fall back to project names.
+              const lineNames = [
+                ...new Set(
+                  products.map((p) => badges[p.project_name]?.line).filter((l): l is string => !!l),
+                ),
+              ];
+              return lineNames.length
+                ? lineNames
+                : [...new Set(products.map((p) => p.project_name))];
+            })()}
+          />
           <AddToReleaseDialog releaseId={release.id} candidates={candidates} clientId={client.id} />
           <ReleaseDialog
             clientId={client.id}

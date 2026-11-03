@@ -15,6 +15,10 @@ const WIDTHS: Record<string, string> = {
   "max-w-lg": "sm:max-w-lg",
   "max-w-xl": "sm:max-w-xl",
   "max-w-2xl": "sm:max-w-2xl",
+  "max-w-3xl": "sm:max-w-3xl",
+  "max-w-4xl": "sm:max-w-4xl",
+  // Wide, like the Publish popup.
+  "max-w-wide": "sm:max-w-[min(1240px,calc(100vw-2rem))]",
 };
 
 /**
