@@ -4,12 +4,13 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import type { PoolConnection } from "mysql2/promise";
 import { getCurrentMemberId, requireUser } from "@/lib/auth";
 import { SESSION_COOKIE } from "@/lib/session";
 import {
+  type Conn,
   errorMessage,
   exec,
+  ident,
   insert,
   insertMany,
   isDuplicate,
@@ -17,6 +18,7 @@ import {
   pool,
   row,
   rows,
+  setImporting,
   transaction,
   updateById,
 } from "@/lib/db";
@@ -296,7 +298,7 @@ async function submitProducts(
   releaseId: string,
   productIds: string[],
   assignee: string | null,
-  conn?: PoolConnection,
+  conn?: Conn,
 ): Promise<void> {
   if (productIds.length === 0) return;
   const on = conn ?? pool;
@@ -630,7 +632,7 @@ export async function deleteProduct(id: string): Promise<ActionResult> {
 async function storeKeystoreFile(
   keystoreId: string,
   file: File,
-  conn?: PoolConnection,
+  conn?: Conn,
 ): Promise<string> {
   const relative = `keystores/${keystoreId}/${Date.now()}-${safeFileName(file.name)}`;
   await saveUpload("jks", relative, file);
@@ -833,7 +835,7 @@ export async function importRows(
   ): Promise<string> {
     const keys = Object.keys(where);
     const found = await row<{ id: string }>(
-      `SELECT id FROM \`${table}\` WHERE ${keys.map((k) => `\`${k}\` = ?`).join(" AND ")}`,
+      `SELECT id FROM ${ident(table)} WHERE ${keys.map((k) => `lower(${ident(k)}::text) = lower(?::text)`).join(" AND ")}`,
       keys.map((k) => where[k]),
     );
     return found?.id ?? insert(table, { ...where, ...values });
@@ -1139,11 +1141,11 @@ export async function saveTeamMember(fd: FormData): Promise<ActionResult> {
         await updateById("users", userId, { email, name, ...(hash ? { password_hash: hash } : {}) }, conn);
       } else if (hash) {
         // The member row is written below; don't let the database add another.
-        await conn.query("SET @importing = 1");
+        await setImporting(conn, true);
         try {
           userId = await insert("users", { email, password_hash: hash, name }, conn);
         } finally {
-          await conn.query("SET @importing = 0");
+          await setImporting(conn, false);
         }
       }
 

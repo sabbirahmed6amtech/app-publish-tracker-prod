@@ -99,8 +99,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <div className="card mb-5 border-bad/30 bg-bad-soft p-4 text-[13px] text-bad">
               <strong className="font-semibold">Could not load data.</strong> {loadError}
               <div className="mt-1 text-bad">
-                Is MySQL running, and has{" "}
-                <code className="font-mono">database/schema.sql</code> been imported into the
+                Is the database reachable, and have the{" "}
+                <code className="font-mono">supabase/migrations</code> been applied to the
                 database in <code className="font-mono">DATABASE_URL</code>?
               </div>
             </div>

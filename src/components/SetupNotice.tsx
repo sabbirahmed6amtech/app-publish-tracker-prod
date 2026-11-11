@@ -4,14 +4,14 @@ export function SetupNotice() {
     <div className="mx-auto max-w-2xl px-6 py-16">
       <h1 className="text-xl font-semibold text-foreground">Connect the database to continue</h1>
       <p className="mt-2 text-[14px] text-foreground/70">
-        The tracker needs its MySQL database and a login secret before it can start.
+        The tracker needs its Supabase database and a login secret before it can start.
       </p>
       <ol className="mt-6 space-y-3 text-[13px] text-foreground/85">
         <li>
-          <strong className="font-semibold">1.</strong> Create a MySQL database (e.g.{" "}
-          <code className={code}>publish_tracker</code>) and import{" "}
-          <code className={code}>database/schema.sql</code>, then{" "}
-          <code className={code}>database/seed.sql</code> for sample data.
+          <strong className="font-semibold">1.</strong> Create a Supabase project and run{" "}
+          <code className={code}>supabase db push</code> to apply{" "}
+          <code className={code}>supabase/migrations</code>, then{" "}
+          <code className={code}>supabase/seed.sql</code> for sample data.
         </li>
         <li>
           <strong className="font-semibold">2.</strong> Copy{" "}

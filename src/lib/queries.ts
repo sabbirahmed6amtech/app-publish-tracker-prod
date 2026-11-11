@@ -417,13 +417,13 @@ export async function trackerSearch(q: string): Promise<TrackerMatch[]> {
   const pattern = `%${raw.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
   return rows<TrackerMatch>(
     `SELECT c.ticket, c.name,
-            (SELECT GROUP_CONCAT(DISTINCT NULLIF(p.app_name, '') ORDER BY p.app_name SEPARATOR ', ')
+            (SELECT string_agg(DISTINCT NULLIF(p.app_name, ''), ', ' ORDER BY NULLIF(p.app_name, ''))
                FROM products p WHERE p.client_id = c.id AND p.archived = FALSE) AS apps
        FROM clients c
       WHERE c.archived = FALSE
-        AND (c.name LIKE ? OR c.ticket LIKE ?
-             OR EXISTS (SELECT 1 FROM products p WHERE p.client_id = c.id AND p.app_name LIKE ?))
-      ORDER BY (c.ticket = ?) DESC, (c.name LIKE ?) DESC, c.name
+        AND (c.name ILIKE ? OR c.ticket ILIKE ?
+             OR EXISTS (SELECT 1 FROM products p WHERE p.client_id = c.id AND p.app_name ILIKE ?))
+      ORDER BY (c.ticket = ?) DESC, (c.name ILIKE ?) DESC, c.name
       LIMIT 10`,
     [pattern, pattern, pattern, raw, `${raw}%`],
   );
@@ -477,8 +477,8 @@ export async function trackerClient(ticket: string): Promise<TrackerClient | nul
 
   const activity = await rows<TrackerClient["activity"][number]>(
     `SELECT COALESCE(NULLIF(a.app_name, ''), a.project_name) AS app, pa.platform,
-            NULLIF(SUBSTRING_INDEX(a.build_version, '+', 1), '') AS version,
-            e.from_status AS \`from\`, e.to_status AS \`to\`, e.created_at AS at
+            NULLIF(split_part(a.build_version, '+', 1), '') AS version,
+            e.from_status AS "from", e.to_status AS "to", e.created_at AS at
        FROM app_events e
        JOIN apps a ON a.id = e.app_id
        JOIN releases r ON r.id = a.release_id
@@ -558,7 +558,6 @@ export async function intakeForm(token: string): Promise<Intake | null> {
     ticket,
     submitted_at,
     client: fields,
-    // MySQL hands back 0/1 for these computed flags.
     accounts: accounts.map((a) => ({ ...a, has_login_password: Boolean(a.has_login_password) })),
     apps: apps.map(({ logo_path, ...a }) => ({
       ...a,
@@ -610,8 +609,8 @@ export async function getTickets(view: TicketView, memberId: string | null): Pro
 export async function ticketCounts(memberId: string | null) {
   const r = await row<{ open: number; mine: number; unassigned: number }>(
     `SELECT COUNT(*) AS open,
-            COALESCE(SUM(assigned_to <=> ?), 0) AS mine,
-            COALESCE(SUM(assigned_to IS NULL), 0) AS unassigned
+            COUNT(*) FILTER (WHERE assigned_to IS NOT DISTINCT FROM ?::text) AS mine,
+            COUNT(*) FILTER (WHERE assigned_to IS NULL) AS unassigned
        FROM mail_tickets WHERE status <> 'resolved'`,
     [memberId],
   );
@@ -638,7 +637,7 @@ export async function getTicket(number: number): Promise<{
 export async function getRecentMails(days = 14): Promise<StoreMail[]> {
   return rows<StoreMail>(
     `${MAIL_SELECT}
-      WHERE NOT m.action_required AND m.received_at >= UTC_TIMESTAMP(3) - INTERVAL ? DAY
+      WHERE NOT m.action_required AND m.received_at >= now() - make_interval(days => ?::int)
       ORDER BY m.received_at DESC LIMIT 200`,
     [days],
   );

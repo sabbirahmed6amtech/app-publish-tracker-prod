@@ -70,8 +70,8 @@ export async function setTicketStatus(ticketId: string, status: TicketStatus): P
     const changed = await exec(
       `UPDATE mail_tickets
           SET status = ?,
-              resolved_at = IF(? = 'resolved', UTC_TIMESTAMP(3), NULL),
-              resolved_by = IF(? = 'resolved', ?, NULL)
+              resolved_at = CASE WHEN ?::text = 'resolved' THEN now() END,
+              resolved_by = CASE WHEN ?::text = 'resolved' THEN ?::text END
         WHERE id = ? AND status <> ?`,
       [status, status, status, actor, ticketId, status],
     );
@@ -91,8 +91,8 @@ export async function assignTicket(ticketId: string, memberId: string | null): P
       ? await row<{ name: string }>("SELECT name FROM team_members WHERE id = ?", [memberId])
       : null;
     const changed = await exec(
-      `UPDATE mail_tickets SET assigned_to = ?, assigned_at = UTC_TIMESTAMP(3), assigned_by = ?
-        WHERE id = ? AND NOT (assigned_to <=> ?)`,
+      `UPDATE mail_tickets SET assigned_to = ?, assigned_at = now(), assigned_by = ?
+        WHERE id = ? AND assigned_to IS DISTINCT FROM ?::text`,
       [memberId, await getCurrentMemberId(), ticketId, memberId],
     );
     if (changed) {
@@ -138,8 +138,8 @@ export async function linkTicketToProduct(
     const actor = await actorName(session);
 
     const linked = await transaction(async (conn) => {
-      const mailSet = `SET product_id = ?, matched_by = 'manual', topic = LEFT(CONCAT(kind, ':', ?), 255)`;
-      const ticketSet = `SET product_id = ?, topic = LEFT(CONCAT(kind, ':', ?), 255)`;
+      const mailSet = `SET product_id = ?, matched_by = 'manual', topic = left(kind || ':' || ?::text, 255)`;
+      const ticketSet = `SET product_id = ?, topic = left(kind || ':' || ?::text, 255)`;
       let count = await exec(
         `UPDATE store_mails ${mailSet} WHERE ticket_id = ?`,
         [productId, productId, ticketId],

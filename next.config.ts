@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Self-contained server in .next/standalone, for handing out a runnable build.
-  output: "standalone",
+  ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
   // Pages that were folded into the four main sections.
   async redirects() {
     return [
@@ -12,6 +11,7 @@ const nextConfig: NextConfig = {
       { source: "/import", destination: "/settings?tab=data", permanent: false },
     ];
   },
+  serverExternalPackages: ["pg"],
   experimental: {
     serverActions: { bodySizeLimit: "4mb" },
     // Every page is force-dynamic, and Next's default client cache for dynamic

@@ -13,7 +13,7 @@ export async function signIn(email: string, password: string): Promise<SignInRes
   if (!address || !password) return { ok: false, error: "Enter your email and password." };
 
   const user = await row<{ id: string; email: string; password_hash: string }>(
-    "SELECT id, email, password_hash FROM users WHERE email = ?",
+    "SELECT id, email, password_hash FROM users WHERE lower(email) = ?",
     [address],
   );
   // The same answer for a wrong email and a wrong password.

@@ -28,14 +28,14 @@ export async function GET(req: Request) {
   const tickets = await rows<Alert>(
     `SELECT t.id, t.number, t.kind, t.subject, t.app_label,
             COALESCE(NULLIF(p.app_name, ''), p.project_name) AS app_name, c.name AS client_name,
-            t.opened_at > t.created_at + INTERVAL 1 SECOND AS reopened,
-            (t.assigned_to <=> ? AND t.assigned_at > ? AND t.assigned_at <= ?) AS assigned_to_me
+            t.opened_at > t.created_at + interval '1 second' AS reopened,
+            (t.assigned_to IS NOT DISTINCT FROM ?::text AND t.assigned_at > ? AND t.assigned_at <= ?) AS assigned_to_me
        FROM mail_tickets t
        LEFT JOIN products p ON p.id = t.product_id
        LEFT JOIN clients c ON c.id = p.client_id
       WHERE t.status <> 'resolved'
         AND ((t.opened_at > ? AND t.opened_at <= ?)
-          OR (? IS NOT NULL AND t.assigned_to = ? AND t.assigned_at > ? AND t.assigned_at <= ?))
+          OR (?::text IS NOT NULL AND t.assigned_to = ?::text AND t.assigned_at > ? AND t.assigned_at <= ?))
       ORDER BY GREATEST(t.opened_at, COALESCE(t.assigned_at, t.opened_at)) DESC LIMIT 10`,
     [me, from, to, from, to, me, me, from, to],
   );

@@ -1,5 +1,4 @@
-import type { PoolConnection } from "mysql2/promise";
-import { exec, insert, pool, row, rows } from "@/lib/db";
+import { type Conn, exec, insert, insertIgnore, row, rows } from "@/lib/db";
 import { classify, decodeEntities, nameKey, type Classified, type MailInput } from "@/lib/mailRules";
 import type { Platform } from "@/lib/types";
 
@@ -89,7 +88,7 @@ export async function addTicketEvent(
   kind: "opened" | "mail" | "reopened" | "status" | "assign" | "note" | "link",
   body: string | null,
   actor: string,
-  on?: PoolConnection,
+  on?: Conn,
 ) {
   await insert("mail_ticket_events", { ticket_id: ticketId, kind, body, actor, created_at: new Date() }, on);
 }
@@ -149,8 +148,8 @@ async function attachToTicket(
     `UPDATE mail_tickets
         SET mail_count = mail_count + 1,
             last_mail_at = GREATEST(last_mail_at, ?),
-            subject = IF(? >= last_mail_at, ?, subject)
-            ${reopen ? ", status = 'open', opened_at = UTC_TIMESTAMP(3), resolved_at = NULL, resolved_by = NULL" : ""}
+            subject = CASE WHEN ? >= last_mail_at THEN ?::text ELSE subject END
+            ${reopen ? ", status = 'open', opened_at = now(), resolved_at = NULL, resolved_by = NULL" : ""}
       WHERE id = ?`,
     [receivedAt, receivedAt, subject, ticket.id],
   );
@@ -164,7 +163,7 @@ export async function resolveByLaterApproval() {
     `SELECT t.id, ok.subject
        FROM mail_tickets t
        JOIN (SELECT product_id, MAX(received_at) AS latest,
-                    SUBSTRING_INDEX(GROUP_CONCAT(subject ORDER BY received_at DESC SEPARATOR '\\n'), '\\n', 1) AS subject
+                    (array_agg(subject ORDER BY received_at DESC))[1] AS subject
                FROM store_mails
               WHERE kind IN ('approved', 'live') AND product_id IS NOT NULL
               GROUP BY product_id) ok ON ok.product_id = t.product_id
@@ -174,7 +173,7 @@ export async function resolveByLaterApproval() {
   );
   for (const t of due) {
     await exec(
-      `UPDATE mail_tickets SET status = 'resolved', resolved_at = UTC_TIMESTAMP(3), resolved_by = ? WHERE id = ?`,
+      `UPDATE mail_tickets SET status = 'resolved', resolved_at = now(), resolved_by = ? WHERE id = ?`,
       [SYSTEM, t.id],
     );
     await addTicketEvent(t.id, "status", `Resolved by a later approval: ${t.subject}`, SYSTEM);
@@ -206,8 +205,7 @@ export async function ingest(mailbox: string, mails: MailInput[]): Promise<Inges
     const subject = decodeEntities(mail.subject).slice(0, 512);
     const receivedAt = new Date(mail.receivedAt);
     const id = crypto.randomUUID();
-    const [inserted] = await pool.query(`INSERT IGNORE INTO store_mails SET ?`, [
-      {
+    const inserted = await insertIgnore("store_mails", {
         id,
         gmail_id: mail.gmailId,
         thread_id: mail.threadId,
@@ -225,9 +223,8 @@ export async function ingest(mailbox: string, mails: MailInput[]): Promise<Inges
         snippet: decodeEntities(mail.snippet).slice(0, 1000),
         received_at: receivedAt,
         created_at: new Date(),
-      },
-    ]);
-    if (!(inserted as { affectedRows: number }).affectedRows) continue;
+    });
+    if (!inserted) continue;
     result.saved += 1;
     if (match) result.matched += 1;
     if (c.action) {
@@ -247,14 +244,14 @@ export async function recordSync(
   saved: number,
   newestAt: string | null,
 ) {
-  await pool.query(
+  await exec(
     `INSERT INTO mail_syncs (id, mailbox, synced_by, newest_at, fetched, saved, synced_at)
-     VALUES (UUID(), ?, ?, ?, ?, ?, UTC_TIMESTAMP(3))
-     ON DUPLICATE KEY UPDATE
-       newest_at = GREATEST(COALESCE(newest_at, VALUES(newest_at)), COALESCE(VALUES(newest_at), newest_at)),
-       fetched = fetched + VALUES(fetched),
-       saved = saved + VALUES(saved),
-       synced_at = VALUES(synced_at)`,
+     VALUES (gen_random_uuid()::text, ?, ?, ?, ?, ?, now())
+     ON CONFLICT (mailbox, synced_by) DO UPDATE SET
+       newest_at = GREATEST(mail_syncs.newest_at, EXCLUDED.newest_at),
+       fetched = mail_syncs.fetched + EXCLUDED.fetched,
+       saved = mail_syncs.saved + EXCLUDED.saved,
+       synced_at = EXCLUDED.synced_at`,
     [mailbox, syncedBy, newestAt ? new Date(newestAt) : null, fetched, saved],
   );
 }
