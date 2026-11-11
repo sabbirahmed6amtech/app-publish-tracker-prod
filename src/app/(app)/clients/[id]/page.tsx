@@ -19,6 +19,8 @@ import { ProductDialog } from "@/components/dialogs/ProductDialog";
 import { ListingDialog } from "@/components/dialogs/ListingDialog";
 import { ClientPlayDialog } from "@/components/dialogs/ClientPlayDialog";
 import { PublishPanel } from "@/components/PublishPanel";
+import { MailFeed } from "@/components/MailList";
+import { MailSyncButton } from "@/components/MailSyncButton";
 import { IntakeLinkButton } from "@/components/IntakeLinkButton";
 import {
   publishChecks,
@@ -30,6 +32,7 @@ import {
 } from "@/lib/publish";
 import {
   getClient,
+  getClientMails,
   activeMembers,
   getProductLines,
   getTeam,
@@ -47,11 +50,11 @@ import {
   releaseState,
 } from "@/lib/constants";
 import { expectedVersion } from "@/lib/storeWatch";
-import type { App, ClientFull, ProductLine, TeamMember } from "@/lib/types";
+import type { App, ClientFull, ProductLine, StoreMail, TeamMember } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-const TABS = ["overview", "apps", "releases", "credentials"] as const;
+const TABS = ["overview", "apps", "releases", "mail", "credentials"] as const;
 
 function roundAppsFor(client: ClientFull, lines: ProductLine[]): RoundApp[] {
   const badges = lineBadges(lines);
@@ -78,10 +81,11 @@ export default async function ClientPage({
   const query = await searchParams;
   const tab = pickTab(query.tab, TABS);
 
-  const [client, roster, lines] = await Promise.all([
+  const [client, roster, lines, mails] = await Promise.all([
     getClient(id),
     getTeam(),
     getProductLines(),
+    getClientMails(id).catch(() => [] as StoreMail[]),
   ]);
   if (!client) notFound();
   const suggestions = projectSuggestions(lines, [client]);
@@ -140,6 +144,14 @@ export default async function ClientPage({
           { key: "apps", label: "Apps", count: activeApps.length },
           { key: "releases", label: "Releases", count: client.releases.length },
           {
+            key: "mail",
+            label: "Store mail",
+            count:
+              new Set(
+                mails.filter((m) => m.ticket_status && m.ticket_status !== "resolved").map((m) => m.ticket_id),
+              ).size || undefined,
+          },
+          {
             key: "credentials",
             label: "Credentials",
             count: client.publisher_accounts.length + client.keystores.length,
@@ -152,6 +164,7 @@ export default async function ClientPage({
       )}
       {tab === "apps" && <AppsTab client={client} lines={lines} suggestions={suggestions} />}
       {tab === "releases" && <ReleasesTab client={client} roster={roster} lines={lines} />}
+      {tab === "mail" && <MailTab client={client} mails={mails} />}
       {tab === "credentials" && <CredentialsTab client={client} />}
 
       {tab === "overview" && current && (
@@ -231,6 +244,62 @@ function OverviewTab({
       lines={lines}
       everLive={[...everLiveProducts(client.releases.flatMap((r) => r.apps))]}
     />
+  );
+}
+
+function MailTab({ client, mails }: { client: ClientFull; mails: StoreMail[] }) {
+  const accountById = new Map(client.publisher_accounts.map((a) => [a.id, a]));
+  const byProduct = new Map<string, StoreMail[]>();
+  for (const m of mails) {
+    if (m.product_id) byProduct.set(m.product_id, [...(byProduct.get(m.product_id) ?? []), m]);
+  }
+  const products = client.products
+    .filter((p) => byProduct.has(p.id) || !p.archived)
+    .sort((a, b) => {
+      const open = (id: string) =>
+        (byProduct.get(id) ?? []).some((m) => m.ticket_status && m.ticket_status !== "resolved") ? 0 : 1;
+      return open(a.id) - open(b.id) || (byProduct.has(a.id) ? 0 : 1) - (byProduct.has(b.id) ? 0 : 1);
+    });
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-[12px] text-muted-foreground">
+          Emails from App Store Connect, Google Play and Firebase about this client&apos;s apps,
+          matched by package name or app name.{" "}
+          <Link href="/mail" className="font-medium text-foreground hover:underline">
+            All store mail
+          </Link>
+        </p>
+        <MailSyncButton className="btn btn-secondary" />
+      </div>
+      {products.map((p) => {
+        const list = byProduct.get(p.id) ?? [];
+        const platform = accountById.get(p.account_id)?.platform ?? "play_store";
+        return (
+          <section key={p.id} className="card overflow-hidden">
+            <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2">
+              <StoreIcon platform={platform} size={14} />
+              <span className="text-[13px] font-semibold">{p.app_name || p.project_name}</span>
+              <span className="truncate font-mono text-[11px] text-muted-foreground">
+                {p.package_name || "no package name"}
+              </span>
+              <span className="ml-auto text-[11px] tabular-nums text-muted-foreground">
+                {list.length} {list.length === 1 ? "email" : "emails"}
+              </span>
+            </div>
+            {list.length === 0 ? (
+              <p className="px-4 py-4 text-[12px] text-muted-foreground">
+                No store emails yet.
+                {!p.package_name && " Add the package name or bundle ID so emails can be matched."}
+              </p>
+            ) : (
+              <MailFeed mails={list} showApp={false} />
+            )}
+          </section>
+        );
+      })}
+    </div>
   );
 }
 

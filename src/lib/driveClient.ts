@@ -16,7 +16,7 @@ export type DriveFolder = { id: string; name: string };
 
 // ---- Google Identity Services (token) ----
 let gisPromise: Promise<void> | null = null;
-function loadGis(): Promise<void> {
+export function loadGis(): Promise<void> {
   if (gisPromise) return gisPromise;
   gisPromise = new Promise((resolve, reject) => {
     if ((window as unknown as { google?: { accounts?: unknown } }).google?.accounts) return resolve();

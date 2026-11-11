@@ -11,6 +11,7 @@ import {
   KanbanIcon,
   LifeBuoyIcon,
   LogOutIcon,
+  MailIcon,
   MenuIcon,
   PlusIcon,
   SettingsIcon,
@@ -42,6 +43,7 @@ export type SidebarClient = {
 const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "My work", icon: KanbanIcon },
   { href: "/clients", label: "Clients", icon: Building2Icon },
+  { href: "/mail", label: "Store mail", icon: MailIcon },
   { href: "/reports", label: "Reports", icon: ChartColumnIcon },
   { href: "/guide", label: "Guide", icon: BookOpenIcon },
   { href: "/support", label: "Support", icon: LifeBuoyIcon },
@@ -51,9 +53,11 @@ const NAV: { href: string; label: string; icon: LucideIcon }[] = [
 export function Sidebar({
   clients,
   email,
+  openMail = 0,
 }: {
   clients: SidebarClient[];
   email: string | null;
+  openMail?: number;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -121,6 +125,11 @@ export function Sidebar({
                 >
                   <Icon className="size-4" />
                   {item.label}
+                  {item.href === "/mail" && openMail > 0 && (
+                    <span className="ml-auto rounded-full bg-bad-soft px-1.5 text-[11px] font-semibold tabular-nums text-bad">
+                      {openMail}
+                    </span>
+                  )}
                 </Link>
               );
             })}

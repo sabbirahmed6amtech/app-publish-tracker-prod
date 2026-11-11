@@ -2,9 +2,11 @@ import { Sidebar, type SidebarClient } from "@/components/Sidebar";
 import { TopBar, type SearchItem } from "@/components/TopBar";
 import { NewClientWizard } from "@/components/dialogs/NewClientWizard";
 import { PageContainer } from "@/components/PageContainer";
+import { MailAlerts } from "@/components/MailAlerts";
 import { redirect } from "next/navigation";
 import { getSession, SIGN_OUT_PATH } from "@/lib/auth";
 import {
+  countOpenTickets,
   getClients,
   getProductLines,
   getTeam,
@@ -26,15 +28,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   let suggestions: string[] = [];
   let loadError: string | null = null;
   let user: { email?: string } | null = null;
+  let openMail = 0;
 
   try {
     // Session, roster and client tree are independent — fetch them together.
-    const [auth, roster, tree, productLines] = await Promise.all([
+    const [auth, roster, tree, productLines, mailCount] = await Promise.all([
       getSession(),
       getTeam(),
       getClients(),
       getProductLines(),
+      countOpenTickets().catch(() => 0),
     ]);
+    openMail = mailCount;
     lines = productLines;
     suggestions = projectSuggestions(productLines, tree);
     user = auth ? { email: auth.email } : null;
@@ -82,7 +87,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      <Sidebar clients={clients} email={user?.email ?? null} />
+      <MailAlerts />
+      <Sidebar clients={clients} email={user?.email ?? null} openMail={openMail} />
       <main className="min-w-0 flex-1">
         <TopBar
           items={search}

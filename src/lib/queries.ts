@@ -13,6 +13,8 @@ import type {
   Intake,
   IntakeApp,
   Keystore,
+  MailSync,
+  MailTicket,
   LineBadge,
   Product,
   ProductLine,
@@ -20,8 +22,10 @@ import type {
   PublisherAccount,
   Release,
   ReleaseWithApps,
+  StoreMail,
   SupportArticle,
   TeamMember,
+  TicketEvent,
 } from "@/lib/types";
 
 /**
@@ -562,4 +566,98 @@ export async function intakeForm(token: string): Promise<Intake | null> {
       logo: logoUrl(logo_path),
     })),
   };
+}
+
+const MAIL_SELECT = `
+  SELECT m.*, p.app_name, p.project_name, p.client_id, c.name AS client_name, pa.platform,
+         t.number AS ticket_number, t.status AS ticket_status
+    FROM store_mails m
+    LEFT JOIN products p ON p.id = m.product_id
+    LEFT JOIN clients c ON c.id = p.client_id
+    LEFT JOIN publisher_accounts pa ON pa.id = p.account_id
+    LEFT JOIN mail_tickets t ON t.id = m.ticket_id`;
+
+const TICKET_SELECT = `
+  SELECT t.*, tm.name AS assignee_name, p.app_name, p.project_name, p.package_name, p.client_id,
+         c.name AS client_name, pa.platform
+    FROM mail_tickets t
+    LEFT JOIN team_members tm ON tm.id = t.assigned_to
+    LEFT JOIN products p ON p.id = t.product_id
+    LEFT JOIN clients c ON c.id = p.client_id
+    LEFT JOIN publisher_accounts pa ON pa.id = p.account_id`;
+
+export type TicketView = "open" | "mine" | "unassigned" | "resolved";
+
+export async function getTickets(view: TicketView, memberId: string | null): Promise<MailTicket[]> {
+  if (view === "resolved") {
+    return rows<MailTicket>(
+      `${TICKET_SELECT} WHERE t.status = 'resolved' ORDER BY t.resolved_at DESC LIMIT 200`,
+    );
+  }
+  const where =
+    view === "mine"
+      ? "AND t.assigned_to = ?"
+      : view === "unassigned"
+        ? "AND t.assigned_to IS NULL"
+        : "";
+  return rows<MailTicket>(
+    `${TICKET_SELECT} WHERE t.status <> 'resolved' ${where}
+      ORDER BY t.status = 'in_progress', t.last_mail_at DESC`,
+    view === "mine" ? [memberId] : [],
+  );
+}
+
+export async function ticketCounts(memberId: string | null) {
+  const r = await row<{ open: number; mine: number; unassigned: number }>(
+    `SELECT COUNT(*) AS open,
+            COALESCE(SUM(assigned_to <=> ?), 0) AS mine,
+            COALESCE(SUM(assigned_to IS NULL), 0) AS unassigned
+       FROM mail_tickets WHERE status <> 'resolved'`,
+    [memberId],
+  );
+  return { open: Number(r?.open ?? 0), mine: Number(r?.mine ?? 0), unassigned: Number(r?.unassigned ?? 0) };
+}
+
+export async function getTicket(number: number): Promise<{
+  ticket: MailTicket;
+  mails: StoreMail[];
+  events: TicketEvent[];
+} | null> {
+  const ticket = await row<MailTicket>(`${TICKET_SELECT} WHERE t.number = ?`, [number]);
+  if (!ticket) return null;
+  const [mails, events] = await Promise.all([
+    rows<StoreMail>(`${MAIL_SELECT} WHERE m.ticket_id = ? ORDER BY m.received_at DESC`, [ticket.id]),
+    rows<TicketEvent>(
+      `SELECT id, kind, body, actor, created_at FROM mail_ticket_events WHERE ticket_id = ? ORDER BY created_at DESC`,
+      [ticket.id],
+    ),
+  ]);
+  return { ticket, mails, events };
+}
+
+export async function getRecentMails(days = 14): Promise<StoreMail[]> {
+  return rows<StoreMail>(
+    `${MAIL_SELECT}
+      WHERE NOT m.action_required AND m.received_at >= UTC_TIMESTAMP(3) - INTERVAL ? DAY
+      ORDER BY m.received_at DESC LIMIT 200`,
+    [days],
+  );
+}
+
+export async function getClientMails(clientId: string): Promise<StoreMail[]> {
+  return rows<StoreMail>(
+    `${MAIL_SELECT} WHERE p.client_id = ? ORDER BY m.received_at DESC LIMIT 300`,
+    [clientId],
+  );
+}
+
+export async function countOpenTickets(): Promise<number> {
+  const r = await row<{ n: number }>(`SELECT COUNT(*) AS n FROM mail_tickets WHERE status <> 'resolved'`);
+  return Number(r?.n ?? 0);
+}
+
+export async function getMailSyncs(): Promise<MailSync[]> {
+  return rows<MailSync>(
+    `SELECT mailbox, synced_by, synced_at, fetched, saved FROM mail_syncs ORDER BY synced_at DESC`,
+  );
 }

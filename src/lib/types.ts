@@ -1,3 +1,5 @@
+import type { MailKind, MailSource, TicketStatus } from "@/lib/mailRules";
+
 export type Platform = "play_store" | "app_store";
 
 /** How far the client's invite to their store account has got. */
@@ -331,4 +333,71 @@ export type SupportArticle = {
   title: string;
   body: string;
   sort_order: number;
+};
+
+export type StoreMail = {
+  id: string;
+  gmail_id: string;
+  thread_id: string | null;
+  mailbox: string;
+  product_id: string | null;
+  ticket_id: string | null;
+  matched_by: "package" | "name" | "manual" | null;
+  source: MailSource;
+  kind: MailKind;
+  action_required: boolean;
+  app_label: string | null;
+  topic: string;
+  sender: string;
+  subject: string;
+  snippet: string | null;
+  received_at: string;
+  app_name: string | null;
+  project_name: string | null;
+  client_id: string | null;
+  client_name: string | null;
+  platform: Platform | null;
+  ticket_number: number | null;
+  ticket_status: TicketStatus | null;
+};
+
+export type MailTicket = {
+  id: string;
+  number: number;
+  product_id: string | null;
+  source: MailSource;
+  kind: MailKind;
+  app_label: string | null;
+  subject: string;
+  status: TicketStatus;
+  assigned_to: string | null;
+  assignee_name: string | null;
+  mail_count: number;
+  first_mail_at: string;
+  last_mail_at: string;
+  opened_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+  app_name: string | null;
+  project_name: string | null;
+  package_name: string | null;
+  client_id: string | null;
+  client_name: string | null;
+  platform: Platform | null;
+};
+
+export type TicketEvent = {
+  id: string;
+  kind: "opened" | "mail" | "reopened" | "status" | "assign" | "note" | "link";
+  body: string | null;
+  actor: string | null;
+  created_at: string;
+};
+
+export type MailSync = {
+  mailbox: string;
+  synced_by: string;
+  synced_at: string;
+  fetched: number;
+  saved: number;
 };

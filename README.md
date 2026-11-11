@@ -19,6 +19,7 @@ a plain VPS for production.
 - [How it is built](#how-it-is-built)
 - [Uploads](#uploads)
 - [Store Watch (hourly cron)](#store-watch-hourly-cron)
+- [Store mail (Gmail)](#store-mail-gmail)
 - [Deploying to a VPS](#deploying-to-a-vps)
 - [Backups](#backups)
 - [Updating a running server](#updating-a-running-server)
@@ -234,6 +235,48 @@ Run it hourly from the server's crontab (`crontab -e`):
 ```
 
 It only checks apps that are running (not yet in production), one at a time.
+
+---
+
+## Store mail (Gmail)
+
+**Store mail** in the sidebar turns the emails that App Store Connect, Google
+Play, Firebase and Google Cloud send to the shared mailbox into **tickets**:
+
+- Each rejection, build issue, policy notice, crash alert or account warning
+  opens a ticket (`SM-12`). Repeat emails about the same thing join it.
+- A ticket is **Open → In progress → Resolved**, has an **assignee** (by default
+  whoever owns the client's latest release) and an activity log with notes.
+- A new email on a resolved ticket **reopens** it. A later App Store approval
+  **resolves** an open rejection or build-issue ticket for the same app.
+- Every open tracker tab checks every 45 seconds and shows a **popup** for new
+  or reopened tickets, plus a **desktop notification** once someone clicks
+  *Turn on desktop alerts* on the Store mail page.
+- Each client's **Store mail** tab lists every email per app, with its ticket.
+
+Each email is matched to an app with no per-client setup:
+
+1. the app's **package name / bundle ID** appears in the subject or body, else
+2. the **app name** in the subject equals the app's store listing name or
+   project name, else
+3. the ticket shows as **not matched to an app**. **Link to app** fixes it, and
+   later emails with the same name follow automatically.
+
+Unmatched emails that need no action are skipped.
+
+### Sync inbox
+
+**Sync inbox** reads the mailbox from the browser, like the Drive export:
+whoever clicks it signs in with the mailbox account (read-only). It reads the
+last 48 hours at most. It needs, in the Google Cloud project that owns
+`NEXT_PUBLIC_GOOGLE_CLIENT_ID`: the **Gmail API** enabled, the
+`https://www.googleapis.com/auth/gmail.readonly` scope on the consent screen,
+and (while in Testing) the mailbox added as a **test user**.
+
+### Database
+
+On an existing server apply `database/migrations/2026-11-08-store-mails.sql`
+(adds `mail_tickets`, `mail_ticket_events`, `store_mails` and `mail_syncs`).
 
 ---
 

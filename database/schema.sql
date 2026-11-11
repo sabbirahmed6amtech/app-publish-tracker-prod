@@ -285,6 +285,92 @@ CREATE TABLE product_line_projects (
   CONSTRAINT product_line_projects_line_id_fkey FOREIGN KEY (line_id) REFERENCES product_lines (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ------------------------------------------------------------ store mail ----
+
+CREATE TABLE mail_tickets (
+  id            CHAR(36)     NOT NULL DEFAULT (UUID()),
+  number        INT          NOT NULL AUTO_INCREMENT,
+  topic         VARCHAR(255) NOT NULL,
+  product_id    CHAR(36)     NULL,
+  source        ENUM('app_store', 'play_store', 'firebase', 'google_cloud', 'other') NOT NULL,
+  kind          VARCHAR(32)  NOT NULL,
+  app_label     VARCHAR(255) NULL,
+  label_key     VARCHAR(191) NULL,
+  subject       VARCHAR(512) NOT NULL DEFAULT '',
+  status        ENUM('open', 'in_progress', 'resolved') NOT NULL DEFAULT 'open',
+  assigned_to   CHAR(36)     NULL,
+  assigned_at   DATETIME(3)  NULL,
+  assigned_by   CHAR(36)     NULL,
+  mail_count    INT          NOT NULL DEFAULT 0,
+  first_mail_at DATETIME(3)  NOT NULL,
+  last_mail_at  DATETIME(3)  NOT NULL,
+  opened_at     DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  resolved_at   DATETIME(3)  NULL,
+  resolved_by   VARCHAR(255) NULL,
+  created_at    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY mail_tickets_number_key (number),
+  KEY mail_tickets_topic_idx (topic, created_at),
+  KEY mail_tickets_status_idx (status, last_mail_at),
+  KEY mail_tickets_opened_idx (opened_at),
+  KEY mail_tickets_label_idx (label_key),
+  CONSTRAINT mail_tickets_product_id_fkey  FOREIGN KEY (product_id)  REFERENCES products (id)     ON DELETE SET NULL,
+  CONSTRAINT mail_tickets_assigned_to_fkey FOREIGN KEY (assigned_to) REFERENCES team_members (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE mail_ticket_events (
+  id         CHAR(36)     NOT NULL DEFAULT (UUID()),
+  ticket_id  CHAR(36)     NOT NULL,
+  kind       VARCHAR(16)  NOT NULL,
+  body       TEXT         NULL,
+  actor      VARCHAR(255) NULL,
+  created_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  KEY mail_ticket_events_ticket_idx (ticket_id, created_at),
+  CONSTRAINT mail_ticket_events_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES mail_tickets (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE store_mails (
+  id              CHAR(36)     NOT NULL DEFAULT (UUID()),
+  gmail_id        VARCHAR(64)  NOT NULL,
+  thread_id       VARCHAR(64)  NULL,
+  mailbox         VARCHAR(255) NOT NULL,
+  product_id      CHAR(36)     NULL,
+  ticket_id       CHAR(36)     NULL,
+  matched_by      ENUM('package', 'name', 'manual') NULL,
+  source          ENUM('app_store', 'play_store', 'firebase', 'google_cloud', 'other') NOT NULL,
+  kind            VARCHAR(32)  NOT NULL,
+  action_required BOOLEAN      NOT NULL DEFAULT FALSE,
+  app_label       VARCHAR(255) NULL,
+  label_key       VARCHAR(191) NULL,
+  topic           VARCHAR(255) NOT NULL,
+  sender          VARCHAR(255) NOT NULL DEFAULT '',
+  subject         VARCHAR(512) NOT NULL DEFAULT '',
+  snippet         TEXT         NULL,
+  received_at     DATETIME(3)  NOT NULL,
+  created_at      DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY store_mails_gmail_key (mailbox, gmail_id),
+  KEY store_mails_product_idx (product_id, received_at),
+  KEY store_mails_ticket_idx (ticket_id, received_at),
+  KEY store_mails_label_idx (label_key),
+  CONSTRAINT store_mails_product_id_fkey FOREIGN KEY (product_id) REFERENCES products (id)     ON DELETE SET NULL,
+  CONSTRAINT store_mails_ticket_id_fkey  FOREIGN KEY (ticket_id)  REFERENCES mail_tickets (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE mail_syncs (
+  id         CHAR(36)     NOT NULL DEFAULT (UUID()),
+  mailbox    VARCHAR(255) NOT NULL,
+  synced_by  VARCHAR(255) NOT NULL,
+  newest_at  DATETIME(3)  NULL,
+  fetched    INT          NOT NULL DEFAULT 0,
+  saved      INT          NOT NULL DEFAULT 0,
+  synced_at  DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY mail_syncs_mailbox_agent_key (mailbox, synced_by)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- -------------------------------------------------------------- triggers ----
 -- (updated_at needs none: the columns refresh themselves ON UPDATE.)
 --
