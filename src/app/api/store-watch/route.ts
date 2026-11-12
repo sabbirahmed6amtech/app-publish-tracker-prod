@@ -23,7 +23,7 @@ async function handle(req: Request) {
 }
 
 /**
- * The hourly Store Watch run. Vercel Cron calls GET with
+ * The Store Watch run. Vercel Cron calls GET with
  * `Authorization: Bearer $CRON_SECRET`; any other scheduler can still use:
  *   curl -X POST -H "x-store-watch-key: $STORE_WATCH_KEY" https://<site>/api/store-watch
  */

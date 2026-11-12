@@ -17,7 +17,7 @@ Tracks Play Store / App Store publication for client Flutter apps.
 - [Creating the first account](#creating-the-first-account)
 - [How it is built](#how-it-is-built)
 - [Uploads](#uploads)
-- [Store Watch (hourly cron)](#store-watch-hourly-cron)
+- [Store Watch (daily cron)](#store-watch-daily-cron)
 - [Store mail (Gmail)](#store-mail-gmail)
 - [Database changes](#database-changes)
 - [Troubleshooting](#troubleshooting)
@@ -206,14 +206,15 @@ fine locally, but **not on Vercel**, whose disk is thrown away.
 
 ---
 
-## Store Watch (hourly cron)
+## Store Watch (daily cron)
 
 Store Watch checks each running app's public store page and flags when it has
-gone live. On Vercel, `vercel.json` schedules it hourly; Vercel sends
+gone live. On Vercel, `vercel.json` schedules it once a day at 06:00 UTC (the
+Hobby plan allows only daily cron jobs); Vercel sends
 `Authorization: Bearer $CRON_SECRET`, so set `CRON_SECRET` in the project.
 
-> Vercel **Hobby** only allows daily cron jobs. On Hobby, change the schedule in
-> `vercel.json` to `0 6 * * *` (or call the endpoint from any external scheduler).
+> On the Pro plan, set the schedule in `vercel.json` to `0 * * * *` to run it
+> hourly, or call the endpoint more often from any external scheduler.
 
 Any other scheduler can still call it with `STORE_WATCH_KEY`:
 
@@ -286,7 +287,7 @@ plans). Storage files live in the `jks` and `logos` buckets.
   transaction pooler URL (port `6543`) on Vercel, not the direct connection.
 - **Uploads fail on Vercel** — `SUPABASE_URL` / `SUPABASE_SECRET_KEY` are missing,
   so the app fell back to disk.
-- **Store Watch never runs** — `CRON_SECRET` isn't set, or the Hobby plan
-  rejected the hourly schedule (see [Store Watch](#store-watch-hourly-cron)).
+- **Store Watch never runs** — `CRON_SECRET` isn't set (see
+  [Store Watch](#store-watch-daily-cron)).
 - **Do not run `next build` while `next dev` is running** — they share `.next`.
   Typecheck with `npx tsc --noEmit` instead.
