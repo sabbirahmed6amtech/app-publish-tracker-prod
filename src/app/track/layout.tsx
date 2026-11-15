@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { BrandMark } from "@/components/BrandMark";
 
 export const metadata: Metadata = {
   title: "Status tracker · Publish Tracker",
@@ -16,9 +17,7 @@ export default function TrackLayout({ children }: { children: React.ReactNode })
       <header className="border-b bg-card">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2.5 px-4 sm:px-6">
           <Link href="/track" className="flex items-center gap-2.5">
-            <span className="grid size-7 place-items-center rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
-              P
-            </span>
+            <BrandMark className="size-7" />
             <span className="leading-tight">
               <span className="block text-[14px] font-semibold">Publish Tracker</span>
               <span className="block text-[11px] text-muted-foreground">App status</span>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { BrandMark } from "@/components/BrandMark";
 
 export const metadata: Metadata = {
   title: "Store details · Publish Tracker",
@@ -15,9 +16,7 @@ export default function IntakeLayout({ children }: { children: React.ReactNode }
     <div className="flex min-h-screen flex-col bg-muted/30">
       <header className="border-b bg-card">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2.5 px-4 sm:px-6">
-          <span className="grid size-7 place-items-center rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
-            P
-          </span>
+          <BrandMark className="size-7" />
           <span className="leading-tight">
             <span className="block text-[14px] font-semibold">Publish Tracker</span>
             <span className="block text-[11px] text-muted-foreground">Store details</span>

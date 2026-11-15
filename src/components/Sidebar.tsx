@@ -22,6 +22,7 @@ import { signOut } from "@/lib/actions";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StoreIcon } from "@/components/StoreIcon";
 import type { Platform, ReleaseState } from "@/lib/types";
+import { BrandMark } from "@/components/BrandMark";
 
 export type SidebarRelease = {
   id: string;
@@ -84,6 +85,7 @@ export function Sidebar({
         >
           <MenuIcon className="size-4" />
         </button>
+        <BrandMark className="size-6" />
         <span className="text-[14px] font-semibold">Publish Tracker</span>
       </div>
 
@@ -93,9 +95,7 @@ export function Sidebar({
       >
         <div className="flex h-full flex-col lg:sticky lg:top-0 lg:h-screen">
           <div className="hidden h-14 items-center gap-2.5 border-b px-4 lg:flex">
-            <span className="grid size-7 place-items-center rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
-              P
-            </span>
+            <BrandMark className="size-7" />
             <div className="leading-tight">
               <div className="text-[14px] font-semibold">Publish Tracker</div>
               <div className="text-[11px] text-muted-foreground">Store submissions</div>

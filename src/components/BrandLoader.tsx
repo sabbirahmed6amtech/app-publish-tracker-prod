@@ -1,3 +1,5 @@
+import { BrandMark } from "@/components/BrandMark";
+
 /**
  * The app's loading mark: the brand tile inside a spinning ring, hopping
  * dots, and three messages that take turns while you wait. Used by every
@@ -27,9 +29,7 @@ export function BrandLoader({
             className="stroke-foreground"
           />
         </svg>
-        <span className="grid size-10 place-items-center rounded-xl bg-primary text-[16px] font-bold text-primary-foreground">
-          P
-        </span>
+        <BrandMark className="size-10" />
       </div>
 
       <div className="flex items-center gap-1" aria-hidden>

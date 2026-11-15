@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/authActions";
 import { Spinner } from "@/components/Spinner";
+import { BrandMark } from "@/components/BrandMark";
 
 function LoginForm() {
   const router = useRouter();
@@ -35,9 +36,7 @@ function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="card w-full max-w-sm p-6">
       <div className="mb-5 flex items-center gap-2.5">
-        <span className="grid size-7 place-items-center rounded-md bg-primary text-[13px] font-bold text-primary-foreground">
-          P
-        </span>
+        <BrandMark className="size-7" />
         <div className="leading-tight">
           <div className="text-[15px] font-semibold">Publish Tracker</div>
           <div className="text-[11px] text-muted-foreground">Store submissions</div>
