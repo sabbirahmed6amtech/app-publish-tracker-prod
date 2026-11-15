@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 /** Pages that use the full window width instead of the centred reading column. */
-const FULL_WIDTH = new Set(["/"]);
+const FULL_WIDTH = new Set(["/", "/mail"]);
 
 export function PageContainer({ children }: { children: ReactNode }) {
   const full = FULL_WIDTH.has(usePathname());

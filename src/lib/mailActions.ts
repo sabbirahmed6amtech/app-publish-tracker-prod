@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTicket } from "@/lib/queries";
 import { getCurrentMemberId, requireUser } from "@/lib/auth";
 import { errorMessage, exec, row, transaction } from "@/lib/db";
 import {
@@ -167,4 +168,12 @@ export async function linkTicketToProduct(
   } catch (e) {
     return { ok: false, error: errorMessage(e) };
   }
+}
+
+export type TicketDetail = NonNullable<Awaited<ReturnType<typeof getTicket>>>;
+
+export async function loadTicket(number: number): Promise<TicketDetail | null> {
+  await requireUser();
+  if (!Number.isInteger(number) || number < 1) return null;
+  return getTicket(number);
 }
