@@ -177,3 +177,32 @@ export async function loadTicket(number: number): Promise<TicketDetail | null> {
   if (!Number.isInteger(number) || number < 1) return null;
   return getTicket(number);
 }
+
+export async function markTicketsRead(ticketIds: string[]): Promise<Result> {
+  const session = await requireUser();
+  if (ticketIds.length === 0) return { ok: true };
+  try {
+    const actor = await actorName(session);
+    await exec(
+      `UPDATE mail_tickets SET read_at = now(), read_by = ? WHERE id IN (${ticketIds.map(() => "?").join(", ")})`,
+      [actor, ...ticketIds],
+    );
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}
+
+export async function markTicketsUnread(ticketIds: string[]): Promise<Result> {
+  await requireUser();
+  if (ticketIds.length === 0) return { ok: true };
+  try {
+    await exec(
+      `UPDATE mail_tickets SET read_at = NULL, read_by = NULL WHERE id IN (${ticketIds.map(() => "?").join(", ")})`,
+      ticketIds,
+    );
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: errorMessage(e) };
+  }
+}

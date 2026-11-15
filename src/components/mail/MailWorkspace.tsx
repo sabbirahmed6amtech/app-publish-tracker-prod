@@ -10,6 +10,7 @@ import {
   LinkIcon,
   Loader2Icon,
   MailIcon,
+  MailOpenIcon,
   MousePointerClickIcon,
   RotateCcwIcon,
   SearchIcon,
@@ -31,7 +32,15 @@ import { KindLabel, MemberAvatar, SourceIcon, StatusIcon, type LinkTarget } from
 import { StoreIcon } from "@/components/StoreIcon";
 import { TicketPane } from "@/components/mail/TicketPane";
 import { cleanSubject, shortAgo, ticketRef, when } from "@/lib/mailRules";
-import { assignTicket, linkTicketToProduct, loadTicket, setTicketStatus, type TicketDetail } from "@/lib/mailActions";
+import {
+  assignTicket,
+  linkTicketToProduct,
+  loadTicket,
+  markTicketsRead,
+  markTicketsUnread,
+  setTicketStatus,
+  type TicketDetail,
+} from "@/lib/mailActions";
 import { filtersFor, type FilterKey } from "@/lib/mailFilters";
 import type { MailTicket } from "@/lib/types";
 
@@ -259,9 +268,16 @@ function TicketRow({
         className="min-w-0 flex-1 rounded-md py-0.5 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         <span className="flex min-w-0 items-center gap-1.5">
+          <span
+            className={`size-2 shrink-0 rounded-full ${t.unread ? "bg-[var(--st-ongoing)]" : "bg-transparent"}`}
+            role={t.unread ? "img" : undefined}
+            aria-label={t.unread ? "Unread" : undefined}
+          />
           <StatusIcon status={t.status} size={13} />
           {t.platform ? <StoreIcon platform={t.platform} size={12} /> : <SourceIcon source={t.source} size={12} />}
-          <span className={`truncate text-[14px] font-semibold ${app ? "" : "italic text-muted-foreground"}`}>
+          <span
+            className={`truncate text-[14px] ${t.unread ? "font-semibold text-foreground" : "font-medium text-foreground/75"} ${app ? "" : "italic"}`}
+          >
             {app ?? (t.app_label ? `“${t.app_label}”` : "Unknown app")}
           </span>
           {t.client_name && <span className="truncate text-[12px] text-muted-foreground">{t.client_name}</span>}
@@ -269,7 +285,9 @@ function TicketRow({
             {shortAgo(stamp)}
           </time>
         </span>
-        <span className="mt-0.5 block truncate text-[14px] text-foreground/80">{cleanSubject(t.subject, t.app_label)}</span>
+        <span className={`mt-0.5 block truncate text-[14px] ${t.unread ? "font-medium text-foreground" : "text-muted-foreground"}`}>
+          {cleanSubject(t.subject, t.app_label)}
+        </span>
         <span className="mt-1 flex items-center gap-2.5 text-[12px] text-muted-foreground">
           <KindLabel kind={t.kind} />
           {t.mail_count > 1 && (
@@ -308,11 +326,13 @@ function BulkBar({
   members,
   meId,
   onClear,
+  onSetRead,
 }: {
   selected: MailTicket[];
   members: Member[];
   meId: string | null;
   onClear: () => void;
+  onSetRead: (unread: boolean) => void;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -361,6 +381,12 @@ function BulkBar({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <button type="button" className="btn btn-secondary h-8" disabled={pending} onClick={() => onSetRead(false)}>
+        <MailOpenIcon className="size-3.5" /> Mark read
+      </button>
+      <button type="button" className="btn btn-secondary h-8" disabled={pending} onClick={() => onSetRead(true)}>
+        <MailIcon className="size-3.5" /> Mark unread
+      </button>
       <button type="button" className="btn btn-secondary h-8" disabled={pending} onClick={() => each("marked in progress", (t) => setTicketStatus(t.id, "in_progress"))}>
         In progress
       </button>
@@ -381,13 +407,14 @@ const SHORTCUTS: [string, string][] = [
   ["A", "Assign the open ticket"],
   ["L", "Link the open ticket to an app"],
   ["E", "Resolve the open ticket"],
+  ["U", "Mark the open ticket read or unread"],
   ["/", "Search"],
   ["Esc", "Clear selection"],
   ["?", "Show these shortcuts"],
 ];
 
 export function MailWorkspace({
-  tickets,
+  tickets: serverTickets,
   members,
   meId,
   targets,
@@ -412,6 +439,43 @@ export function MailWorkspace({
   const [loading, setLoading] = useState(false);
   const request = useRef(0);
   const firstTickets = useRef(true);
+  const [readOverride, setReadOverride] = useState<Map<number, boolean>>(new Map());
+  const autoRead = useRef<number | null>(null);
+  const tickets = useMemo(
+    () => serverTickets.map((t) => (readOverride.has(t.number) ? { ...t, unread: readOverride.get(t.number)! } : t)),
+    [serverTickets, readOverride],
+  );
+
+  useEffect(() => setReadOverride(new Map()), [serverTickets]);
+
+  const setRead = useCallback(
+    (numbers: number[], unread: boolean, silent = false) => {
+      if (numbers.length === 0) return;
+      const set = new Set(numbers);
+      setReadOverride((prev) => {
+        const next = new Map(prev);
+        for (const n of numbers) next.set(n, unread);
+        return next;
+      });
+      const ids = serverTickets.filter((t) => set.has(t.number)).map((t) => t.id);
+      (unread ? markTicketsUnread : markTicketsRead)(ids).then((res) => {
+        if (!res.ok) {
+          toast.error(res.error);
+          setReadOverride((prev) => {
+            const next = new Map(prev);
+            for (const n of numbers) next.delete(n);
+            return next;
+          });
+          return;
+        }
+        if (!silent) {
+          const what = numbers.length === 1 ? ticketRef(numbers[0]!) : `${numbers.length} tickets`;
+          toast.success(`${what} marked ${unread ? "unread" : "read"}`);
+        }
+      });
+    },
+    [serverTickets],
+  );
   const [now] = useState(() => Date.now());
   const filters = useMemo(() => filtersFor(meId, now), [meId, now]);
   const counts = useMemo(
@@ -487,7 +551,17 @@ export function MailWorkspace({
       return;
     }
     if (selectedRef.current !== null) load(selectedRef.current, true);
-  }, [tickets, load]);
+  }, [serverTickets, load]);
+
+  useEffect(() => {
+    if (selected === null) {
+      autoRead.current = null;
+      return;
+    }
+    if (detail?.ticket.number !== selected || autoRead.current === selected) return;
+    autoRead.current = selected;
+    if (tickets.find((t) => t.number === selected)?.unread) setRead([selected], false, true);
+  }, [selected, detail, tickets, setRead]);
 
   const go = useCallback(
     (n: number) => {
@@ -546,6 +620,9 @@ export function MailWorkspace({
       } else if (selectedTicket && key === "l" && !selectedTicket.product_id) {
         event.preventDefault();
         setMenu({ kind: "link", number: selectedTicket.number });
+      } else if (selectedTicket && key === "u") {
+        event.preventDefault();
+        setRead([selectedTicket.number], !selectedTicket.unread);
       } else if (selectedTicket && key === "e" && selectedTicket.status !== "resolved") {
         event.preventDefault();
         runKey(() => setTicketStatus(selectedTicket.id, "resolved"), `${ticketRef(selectedTicket.number)} resolved`);
@@ -553,7 +630,7 @@ export function MailWorkspace({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [ordered, selected, selectedTicket, checked, go, runKey]);
+  }, [ordered, selected, selectedTicket, checked, go, runKey, setRead]);
 
   const triage = filters.filter((f) => f.group === "triage");
   const views = filters.filter((f) => f.group === "view");
@@ -743,7 +820,16 @@ export function MailWorkspace({
           </div>
 
           {checkedTickets.length > 0 && (
-            <BulkBar selected={checkedTickets} members={members} meId={meId} onClear={() => setChecked(new Set())} />
+            <BulkBar
+              selected={checkedTickets}
+              members={members}
+              meId={meId}
+              onClear={() => setChecked(new Set())}
+              onSetRead={(unread) => {
+                setRead(checkedTickets.map((t) => t.number), unread);
+                setChecked(new Set());
+              }}
+            />
           )}
         </section>
 
@@ -779,6 +865,8 @@ export function MailWorkspace({
                 me={me}
                 targets={targets}
                 onBack={() => setSelected(null)}
+                unread={!!selectedTicket?.unread}
+                onToggleRead={() => selectedTicket && setRead([selectedTicket.number], !selectedTicket.unread)}
               />
             ) : loading ? (
               <div role="status" className="flex h-full min-h-[320px] items-center justify-center gap-2 text-[14px] text-muted-foreground">

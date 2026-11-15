@@ -384,6 +384,9 @@ export type MailTicket = {
   client_id: string | null;
   client_name: string | null;
   platform: Platform | null;
+  read_at: string | null;
+  read_by: string | null;
+  unread: boolean;
 };
 
 export type TicketEvent = {

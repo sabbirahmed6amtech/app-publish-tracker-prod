@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, MailIcon, MailOpenIcon } from "lucide-react";
 import {
   GmailButton,
   KindLabel,
@@ -150,6 +150,8 @@ export function TicketPane({
   me,
   targets,
   onBack,
+  unread,
+  onToggleRead,
 }: {
   ticket: MailTicket;
   mails: StoreMail[];
@@ -159,6 +161,8 @@ export function TicketPane({
   me: string | null;
   targets: LinkTarget[];
   onBack: () => void;
+  unread: boolean;
+  onToggleRead: () => void;
 }) {
   const timeline: Entry[] = [
     ...mails.map((mail) => ({ type: "mail" as const, at: mail.received_at, mail })),
@@ -211,6 +215,15 @@ export function TicketPane({
             </span>
           )}
           <span className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onToggleRead}
+              className="btn btn-ghost h-8"
+              title={unread ? "Mark read (U)" : "Mark unread (U)"}
+            >
+              {unread ? <MailOpenIcon className="size-3.5" /> : <MailIcon className="size-3.5" />}
+              {unread ? "Mark read" : "Mark unread"}
+            </button>
             {latest && <GmailButton mail={latest} label="Gmail" className="btn btn-secondary h-8" />}
             <ResolveButton ticketId={ticket.id} status={ticket.status} />
           </span>

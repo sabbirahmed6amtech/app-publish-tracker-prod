@@ -578,7 +578,14 @@ const MAIL_SELECT = `
 
 const TICKET_SELECT = `
   SELECT t.*, tm.name AS assignee_name, p.app_name, p.project_name, p.package_name, p.client_id,
-         c.name AS client_name, pa.platform
+         c.name AS client_name, pa.platform,
+         (t.read_at IS NULL
+           OR t.last_mail_at > t.read_at
+           OR EXISTS (SELECT 1 FROM mail_ticket_events e
+                       WHERE e.ticket_id = t.id
+                         AND e.created_at > t.read_at
+                         AND e.kind IN ('note', 'status', 'assign', 'link', 'reopened')
+                         AND e.actor IS DISTINCT FROM t.read_by)) AS unread
     FROM mail_tickets t
     LEFT JOIN team_members tm ON tm.id = t.assigned_to
     LEFT JOIN products p ON p.id = t.product_id
