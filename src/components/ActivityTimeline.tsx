@@ -44,21 +44,21 @@ export function ActivityTimeline({
           </p>
         </div>
         {total > 0 && (
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium tabular-nums text-muted-foreground">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[12px] font-medium tabular-nums text-muted-foreground">
             {total} {total === 1 ? "update" : "updates"}
           </span>
         )}
       </header>
 
       {events.length === 0 ? (
-        <p className="px-4 py-10 text-center text-[13px] text-muted-foreground">
+        <p className="px-4 py-10 text-center text-[14px] text-muted-foreground">
           Nothing has happened in this release yet.
         </p>
       ) : (
         <div className="px-4 py-3">
           {byDay(events).map(([day, dayEvents]) => (
             <div key={day} className="mb-2 last:mb-0">
-              <h3 className="sticky top-14 z-10 -mx-4 bg-card/95 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground backdrop-blur">
+              <h3 className="sticky top-14 z-10 -mx-4 bg-card/95 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-wide text-muted-foreground backdrop-blur">
                 {day}
               </h3>
               <ol className="relative ml-[15px] border-l pl-6">
@@ -82,7 +82,7 @@ export function ActivityTimeline({
                           )}
                           <div className="min-w-0 leading-tight">
                             <div className="flex items-center gap-1.5">
-                              <span className="truncate text-[13px] font-semibold">
+                              <span className="truncate text-[14px] font-semibold">
                                 {app?.name ?? "Removed app"}
                               </span>
                               {app && <StoreIcon platform={app.platform} size={12} />}
@@ -96,7 +96,7 @@ export function ActivityTimeline({
                         <div className="flex shrink-0 items-center gap-2 text-[12px] text-muted-foreground">
                           {e.actor && (
                             <span className="inline-flex items-center gap-1.5">
-                              <span className="grid size-5 place-items-center rounded-full bg-primary text-[9px] font-semibold uppercase text-primary-foreground">
+                              <span className="grid size-5 place-items-center rounded-full bg-primary text-[11px] font-semibold uppercase text-primary-foreground">
                                 {initials(e.actor)}
                               </span>
                               <span className="hidden sm:inline">{displayName(e.actor)}</span>
@@ -167,7 +167,7 @@ function Change({ event: e }: { event: AppEvent }) {
 function Pill({ status, faded = false }: { status: AppStatus; faded?: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-1.5 py-px text-[11px] font-medium ring-1 ring-inset ${
+      className={`inline-flex items-center gap-1 rounded-full px-1.5 py-px text-[12px] font-medium ring-1 ring-inset ${
         STATUSES[status].chip
       } ${faded ? "opacity-60" : ""}`}
     >

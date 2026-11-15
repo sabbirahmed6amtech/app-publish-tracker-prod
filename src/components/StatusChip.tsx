@@ -32,7 +32,7 @@ export function StatusChip({
       </span>
       {stale && since && (
         <span
-          className="text-[11px] font-medium text-muted-foreground/80"
+          className="text-[12px] font-medium text-muted-foreground/80"
           title={`No status change in ${daysSince(since)} days`}
         >
           {daysSince(since)}d

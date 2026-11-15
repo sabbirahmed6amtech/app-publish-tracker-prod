@@ -74,7 +74,7 @@ export default async function MailPage({
           {other.length ? (
             <MailFeed mails={other} />
           ) : (
-            <p className="px-4 py-12 text-center text-[13px] text-muted-foreground">{EMPTY.other}</p>
+            <p className="px-4 py-12 text-center text-[14px] text-muted-foreground">{EMPTY.other}</p>
           )}
         </section>
       ) : (

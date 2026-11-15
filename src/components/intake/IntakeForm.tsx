@@ -418,13 +418,13 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
         />
         <div className="relative flex items-center gap-4">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
               {form.name} · Ticket #{form.ticket}
             </p>
-            <h1 className="mt-0.5 text-[20px] font-semibold leading-tight tracking-tight sm:text-[22px]">
+            <h1 className="mt-0.5 text-[20px] font-semibold leading-tight tracking-tight sm:text-[24px]">
               Details to publish your apps
             </h1>
-            <p className="mt-1 text-[13px] text-muted-foreground">
+            <p className="mt-1 text-[14px] text-muted-foreground">
               About 5 minutes. Save as you go — this link stays open.
             </p>
           </div>
@@ -469,10 +469,10 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                       </span>
                     )}
                     <span className="min-w-0 flex-1">
-                      <span className={`block truncate text-[13px] ${on ? "font-semibold" : "font-medium"}`}>
+                      <span className={`block truncate text-[14px] ${on ? "font-semibold" : "font-medium"}`}>
                         {t.title}
                       </span>
-                      <span className="flex items-center gap-1 truncate text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1 truncate text-[12px] text-muted-foreground">
                         {"group" in t && t.group ? (
                           <>
                             {t.group.play !== undefined && <StoreIcon platform="play_store" size={10} />}
@@ -484,14 +484,14 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                     </span>
                     {tabHasError(t.key) ? (
                       <span
-                        className="grid size-5 shrink-0 place-items-center rounded-full bg-[var(--st-rejected)] text-[11px] font-bold text-white"
+                        className="grid size-5 shrink-0 place-items-center rounded-full bg-[var(--st-rejected)] text-[12px] font-bold text-white"
                         title="Something here needs fixing"
                       >
                         !
                       </span>
                     ) : (
                       <span
-                        className={`grid size-5 shrink-0 place-items-center rounded-full text-[9px] font-semibold tabular-nums ${
+                        className={`grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-semibold tabular-nums ${
                           complete
                             ? "bg-[var(--st-production)] text-white"
                             : "text-muted-foreground ring-1 ring-border"
@@ -506,7 +506,7 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
               );
             })}
           </ul>
-          <p className="mt-3 hidden px-2.5 text-[11px] text-muted-foreground md:block">
+          <p className="mt-3 hidden px-2.5 text-[12px] text-muted-foreground md:block">
             {dirty
               ? "Unsaved changes"
               : savedAt
@@ -530,8 +530,8 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
               <span className="grid size-14 place-items-center rounded-full bg-good-soft text-good">
                 <PartyPopperIcon className="size-7" />
               </span>
-              <h2 className="mt-4 text-[18px] font-semibold">Thank you!</h2>
-              <p className="mt-1 max-w-sm text-[13px] text-muted-foreground">
+              <h2 className="mt-4 text-[20px] font-semibold">Thank you!</h2>
+              <p className="mt-1 max-w-sm text-[14px] text-muted-foreground">
                 {filled === total
                   ? "We have everything we need. We'll take it from here."
                   : `Saved. ${total - filled} detail${total - filled === 1 ? " is" : "s are"} still missing — come back to this link any time.`}
@@ -544,7 +544,7 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
             <>
               <div key={current.key} className="tracker-rise flex-1 px-5 py-5 sm:px-7 sm:py-6">
                 <h2 className="text-[16px] font-semibold tracking-tight">{current.title}</h2>
-                <p className="mb-5 text-[13px] text-muted-foreground">
+                <p className="mb-5 text-[14px] text-muted-foreground">
                   {current.key === "business"
                     ? "How your users can reach you, and your policy pages."
                     : current.key === "accounts"
@@ -565,7 +565,7 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                           />
                           <span className="min-w-0">
                             <span className="block truncate">{apps[i].name || g.title}</span>
-                            <span className="flex items-center gap-1 text-[11px] font-normal text-muted-foreground">
+                            <span className="flex items-center gap-1 text-[12px] font-normal text-muted-foreground">
                               {g.play !== undefined && <StoreIcon platform="play_store" size={10} />}
                               {g.ios !== undefined && <StoreIcon platform="app_store" size={10} />}
                               {storesOf(g)}
@@ -639,7 +639,7 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                       <label htmlFor="autofill-website" className="label">
                         Have a website? Fill this in for you
                       </label>
-                      <p className="mb-2 text-[11px] text-muted-foreground">
+                      <p className="mb-2 text-[12px] text-muted-foreground">
                         Paste your website and we&apos;ll read your contact details and policy pages
                         from it. You can edit everything afterwards.
                       </p>
@@ -772,7 +772,7 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                         />
 
                         <div className="rounded-xl border bg-muted/30 p-4 sm:col-span-2">
-                          <p className="text-[13px] font-semibold">Test account</p>
+                          <p className="text-[14px] font-semibold">Test account</p>
                           <p className="mb-3 text-[12px] text-muted-foreground">
                             The store reviewers sign in with this to test the app. Only our team sees it.
                           </p>
@@ -796,7 +796,7 @@ export function IntakeForm({ token, form }: { token: string; form: Intake }) {
                 )}
 
                 {error && !(showAll && Object.keys(errors).length === 0 && error.includes("fixing")) && (
-                  <p className="mt-4 rounded-lg bg-bad-soft px-3 py-2.5 text-[13px] text-bad">{error}</p>
+                  <p className="mt-4 rounded-lg bg-bad-soft px-3 py-2.5 text-[14px] text-bad">{error}</p>
                 )}
               </div>
 
@@ -912,7 +912,7 @@ function AccountCard({
               {TEAM_EMAIL}
               <CopyButton value={TEAM_EMAIL} label="Copy email" />
             </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">In {usersPage}.</p>
+            <p className="mt-1 text-[12px] text-muted-foreground">In {usersPage}.</p>
           </div>
         )}
         {values.method === "login" && (
@@ -932,7 +932,7 @@ function AccountCard({
               onChange={set("password")}
               saved={account.has_login_password}
             />
-            <p className="-mt-2 text-[11px] text-muted-foreground sm:col-span-2">
+            <p className="-mt-2 text-[12px] text-muted-foreground sm:col-span-2">
               Only our team sees this, and it's never shown on this page again.
             </p>
           </>
@@ -962,7 +962,7 @@ function Segmented({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.value)}
-            className={`h-8 rounded-md text-[13px] font-medium transition-all ${
+            className={`h-8 rounded-md text-[14px] font-medium transition-all ${
               on ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -1008,7 +1008,7 @@ function Choice({
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-[13px] font-semibold">{title}</span>
+        <span className="block text-[14px] font-semibold">{title}</span>
         <span className="block text-[12px] leading-snug text-muted-foreground">{detail}</span>
       </span>
     </button>
@@ -1074,11 +1074,11 @@ function Field({
       </label>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="mt-1 text-[11px] font-medium text-bad">
+        <p id={`${id}-error`} className="mt-1 text-[12px] font-medium text-bad">
           {error}
         </p>
       ) : (
-        hint && <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>
+        hint && <p className="mt-1 text-[12px] text-muted-foreground">{hint}</p>
       )}
     </div>
   );

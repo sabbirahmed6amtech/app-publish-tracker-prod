@@ -169,7 +169,7 @@ export function NewClientWizard({
           {STEPS.map((label, i) => (
             <li key={label} className="flex items-center gap-2">
               <span
-                className={`grid size-5 place-items-center rounded-full text-[11px] font-semibold ${
+                className={`grid size-5 place-items-center rounded-full text-[12px] font-semibold ${
                   i < step
                     ? "bg-primary text-primary-foreground"
                     : i === step
@@ -235,7 +235,7 @@ export function NewClientWizard({
                       s.enabled ? "bg-card" : "bg-muted/40"
                     }`}
                   >
-                    <label className="flex cursor-pointer items-center gap-2 text-[13px] font-semibold">
+                    <label className="flex cursor-pointer items-center gap-2 text-[14px] font-semibold">
                       <input
                         type="checkbox"
                         checked={s.enabled}
@@ -324,12 +324,12 @@ export function NewClientWizard({
               </div>
 
               {apps.length === 0 ? (
-                <p className="rounded-lg border border-dashed px-4 py-8 text-center text-[13px] text-muted-foreground">
+                <p className="rounded-lg border border-dashed px-4 py-8 text-center text-[14px] text-muted-foreground">
                   Pick the product line this client bought, or add apps one by one.
                 </p>
               ) : (
                 <div className="overflow-hidden rounded-lg border">
-                  <div className="grid grid-cols-[28px_1fr_1fr_auto_28px] gap-2 border-b bg-muted/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground">
+                  <div className="grid grid-cols-[28px_1fr_1fr_auto_28px] gap-2 border-b bg-muted/50 px-3 py-1.5 text-[12px] font-medium text-muted-foreground">
                     <span />
                     <span>Project</span>
                     <span>Store listing name</span>
@@ -408,7 +408,7 @@ export function NewClientWizard({
 
           {step === 3 && (
             <>
-              <p className="text-[13px] text-muted-foreground">
+              <p className="text-[14px] text-muted-foreground">
                 Optional — skip it and add one later from the client&apos;s Credentials tab. It
                 will be linked to every Play Store app.
               </p>
@@ -456,7 +456,7 @@ export function NewClientWizard({
                   rows={4}
                 />
               </div>
-              <label className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2.5 text-[13px]">
+              <label className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2.5 text-[14px]">
                 <input
                   type="checkbox"
                   checked={startRelease}

@@ -44,7 +44,7 @@ export function SupportList({ articles }: { articles: SupportArticle[] }) {
   return (
     <>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-[14px] text-muted-foreground">
           Add a fix whenever you solve something new, so nobody figures it out twice.
         </p>
         <SupportArticleDialog
@@ -91,12 +91,12 @@ export function SupportList({ articles }: { articles: SupportArticle[] }) {
         <div className="card flex flex-col items-center px-6 py-14 text-center">
           <LifeBuoyIcon className="mb-2 size-6 text-muted-foreground/60" />
           <p className="text-[14px] font-medium text-foreground">No entries yet.</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-[14px] text-muted-foreground">
             Add the first common issue and its fix.
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="card px-6 py-12 text-center text-[13px] text-muted-foreground">
+        <div className="card px-6 py-12 text-center text-[14px] text-muted-foreground">
           Nothing matches that.
         </div>
       ) : (
@@ -119,7 +119,7 @@ export function SupportList({ articles }: { articles: SupportArticle[] }) {
                     <span className="truncate text-[14px] font-medium text-foreground">
                       {a.title}
                     </span>
-                    <span className="ml-auto hidden shrink-0 pl-2 text-[11px] uppercase tracking-wide text-muted-foreground/70 sm:inline">
+                    <span className="ml-auto hidden shrink-0 pl-2 text-[12px] uppercase tracking-wide text-muted-foreground/70 sm:inline">
                       {a.category}
                     </span>
                   </button>
@@ -144,7 +144,7 @@ export function SupportList({ articles }: { articles: SupportArticle[] }) {
                       <div className="absolute right-2 top-2">
                         <CopyButton value={a.body} label="Copy solution" />
                       </div>
-                      <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-foreground/85">
+                      <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-foreground/85">
                         {a.body}
                       </p>
                     </div>

@@ -273,6 +273,7 @@ function ExportModal({
                   <input
                     className="field h-9 pl-9"
                     placeholder="Search 6amTech repositories…"
+                    aria-label="Search repositories"
                     value={repoQuery}
                     onChange={(e) => onRepoQuery(e.target.value)}
                     autoFocus
@@ -299,13 +300,13 @@ function ExportModal({
                           <GitBranchIcon className="size-3.5" />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13px] font-medium">{r.name}</span>
-                          <span className="block truncate text-[11px] text-muted-foreground">
+                          <span className="block truncate text-[14px] font-medium">{r.name}</span>
+                          <span className="block truncate text-[12px] text-muted-foreground">
                             {r.owner} · updated {timeAgo(r.pushed)}
                           </span>
                         </span>
                         {r.priv && (
-                          <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                             Private
                           </span>
                         )}
@@ -323,8 +324,8 @@ function ExportModal({
                     <GitBranchIcon className="size-4" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-semibold">{repo.name}</span>
-                    <span className="block truncate text-[11px] text-muted-foreground">{repo.owner}</span>
+                    <span className="block truncate text-[14px] font-semibold">{repo.name}</span>
+                    <span className="block truncate text-[12px] text-muted-foreground">{repo.owner}</span>
                   </span>
                   <button
                     type="button"
@@ -349,7 +350,7 @@ function ExportModal({
                         Branches <span className="text-muted-foreground">({branches.length})</span>
                       </span>
                       {branchSel.size > 0 && (
-                        <span className="text-[11px] text-muted-foreground">{branchSel.size} selected</span>
+                        <span className="text-[12px] text-muted-foreground">{branchSel.size} selected</span>
                       )}
                     </div>
                     {branches.length > 6 && (
@@ -358,6 +359,7 @@ function ExportModal({
                         <input
                           className="field h-9 pl-9"
                           placeholder="Search branches…"
+                          aria-label="Search branches"
                           value={branchQuery}
                           onChange={(e) => setBranchQuery(e.target.value)}
                         />
@@ -369,7 +371,7 @@ function ExportModal({
                         return (
                           <label
                             key={b.name}
-                            className={`flex cursor-pointer items-center gap-2.5 px-3 py-2 text-[13px] hover:bg-muted ${
+                            className={`flex cursor-pointer items-center gap-2.5 px-3 py-2 text-[14px] hover:bg-muted ${
                               on ? "bg-muted/60" : ""
                             }`}
                           >
@@ -381,11 +383,11 @@ function ExportModal({
                             />
                             <span className="min-w-0 flex-1 truncate font-medium">{b.name}</span>
                             {b.name === repo.def && (
-                              <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                              <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                                 default
                               </span>
                             )}
-                            <span className="shrink-0 text-[11px] text-muted-foreground">
+                            <span className="shrink-0 text-[12px] text-muted-foreground">
                               {timeAgo(b.date)}
                             </span>
                           </label>
@@ -422,7 +424,7 @@ function ExportModal({
                   Sign in with Google
                 </button>
               ) : (
-                <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2 text-[13px]">
+                <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2 text-[14px]">
                   <FolderIcon className="size-4 shrink-0 text-muted-foreground" />
                   <span className="min-w-0 truncate">
                     {folder ? folder.name : "No folder"}
@@ -477,7 +479,7 @@ function ExportModal({
                         <span className="font-medium">{q.name}</span>
                         <span className="text-muted-foreground"> @ {q.branch}</span>
                       </span>
-                      <span className="ml-auto shrink-0 text-[11px] text-muted-foreground">
+                      <span className="ml-auto shrink-0 text-[12px] text-muted-foreground">
                         {q.status === "downloading"
                           ? `downloading ${Math.round((q.pct / 0.75) * 100)}%`
                           : q.status === "uploading"
@@ -578,7 +580,7 @@ function ExportModal({
 function StepLabel({ n, children }: { n: number; children: ReactNode }) {
   return (
     <div className="flex items-center gap-2 text-[12px] font-semibold text-foreground/80">
-      <span className="grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+      <span className="grid size-5 place-items-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground">
         {n}
       </span>
       {children}
@@ -713,6 +715,7 @@ function FolderBrowser({
           <input
             className="field h-8 pl-8"
             placeholder="Search…"
+            aria-label="Search this folder"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />

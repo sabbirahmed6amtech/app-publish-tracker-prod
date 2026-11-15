@@ -69,7 +69,7 @@ export function ClientsList({ clients }: { clients: ClientCard[] }) {
       {filtered.length === 0 ? (
         <div className="card px-6 py-14 text-center">
           <p className="text-[14px] font-medium text-foreground">No client matches that.</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-[14px] text-muted-foreground">
             Try a ticket number, a store account, or a person&rsquo;s name.
           </p>
         </div>
@@ -88,10 +88,10 @@ export function ClientsList({ clients }: { clients: ClientCard[] }) {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="truncate text-[15px] font-semibold text-foreground">
+                      <span className="truncate text-[16px] font-semibold text-foreground">
                         {c.name}
                       </span>
-                      <span className="shrink-0 font-mono text-[11px] text-muted-foreground/80">
+                      <span className="shrink-0 font-mono text-[12px] text-muted-foreground/80">
                         #{c.ticket}
                       </span>
                     </div>
@@ -133,7 +133,7 @@ export function ClientsList({ clients }: { clients: ClientCard[] }) {
                 </div>
 
                 {c.latest && (
-                  <div className="flex items-center justify-between border-t pt-2.5 text-[11px] text-muted-foreground/80">
+                  <div className="flex items-center justify-between border-t pt-2.5 text-[12px] text-muted-foreground/80">
                     <span>{state?.label}</span>
                     <span>
                       {c.latest.assignee ? `${c.latest.assignee} · ` : ""}

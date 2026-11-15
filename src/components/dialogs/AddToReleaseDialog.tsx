@@ -60,7 +60,7 @@ export function AddToReleaseDialog({
       >
         <div className="px-5 py-4">
           {candidates.length === 0 ? (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-[14px] text-muted-foreground">
               Every app this client has is already in this release.{" "}
               <Link
                 href={`/clients/${clientId}?tab=apps`}
@@ -89,8 +89,8 @@ export function AddToReleaseDialog({
                       className="size-4 accent-foreground"
                     />
                     <span className="min-w-0 leading-tight">
-                      <span className="block truncate text-[13px] font-medium">{c.label}</span>
-                      <span className="block truncate text-[11px] text-muted-foreground">
+                      <span className="block truncate text-[14px] font-medium">{c.label}</span>
+                      <span className="block truncate text-[12px] text-muted-foreground">
                         {c.sub}
                       </span>
                     </span>

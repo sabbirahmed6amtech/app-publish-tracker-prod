@@ -64,13 +64,13 @@ export function WorkloadCard({
     <section className="card overflow-hidden">
       <div className="flex items-baseline justify-between border-b border-border px-4 py-2.5">
         <div>
-          <h2 className="text-[13px] font-semibold text-foreground">Workload pressure</h2>
-          <p className="text-[11px] text-muted-foreground">
+          <h2 className="text-[14px] font-semibold text-foreground">Workload pressure</h2>
+          <p className="text-[12px] text-muted-foreground">
             Share of work not yet complete.
           </p>
         </div>
         <span
-          className="rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset"
+          className="rounded-full px-2 py-0.5 text-[12px] font-semibold ring-1 ring-inset"
           style={{
             color: zone.hex,
             borderColor: zone.hex,
@@ -131,10 +131,10 @@ export function WorkloadCard({
       {/* who is carrying it */}
       <div className="mt-3 border-t border-border/60 px-4 py-3">
         <div className="mb-2 flex items-baseline justify-between">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
+          <span className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground/80">
             Pressure by person
           </span>
-          <span className="text-[11px] text-muted-foreground/80">share of open work</span>
+          <span className="text-[12px] text-muted-foreground/80">share of open work</span>
         </div>
 
         {people.length === 0 ? (
@@ -181,7 +181,7 @@ export function WorkloadCard({
                   </span>
 
                   <span
-                    className="w-14 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground/80"
+                    className="w-14 shrink-0 text-right text-[12px] tabular-nums text-muted-foreground/80"
                     title={`${p.open} open apps, weighted load ${p.load}`}
                   >
                     {p.open} open
@@ -190,7 +190,7 @@ export function WorkloadCard({
                   <span className="w-5 shrink-0 text-right">
                     {p.attention > 0 && (
                       <span
-                        className="rounded px-1 text-[10px] font-semibold"
+                        className="rounded px-1 text-[11px] font-semibold"
                         style={{
                           color: STATUSES.rejected.hex,
                           backgroundColor: `color-mix(in oklch, ${STATUSES.rejected.hex} 10%, transparent)`,
@@ -207,7 +207,7 @@ export function WorkloadCard({
           </ul>
         )}
 
-        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/80">
+        <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground/80">
           Share of the team&rsquo;s open work, weighted by effort — a fresh build or a
           rejection counts {EFFORT_WEIGHT.ongoing}&times;, anything just waiting on a store
           {" "}{EFFORT_WEIGHT.in_review}&times;. The tick marks an even split.

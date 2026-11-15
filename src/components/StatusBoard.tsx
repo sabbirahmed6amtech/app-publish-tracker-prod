@@ -255,7 +255,7 @@ export function StatusBoard({
               }`}
             >
               <span
-                className={`text-[22px] font-semibold tabular-nums ${
+                className={`text-[24px] font-semibold tabular-nums ${
                   count && f.key !== "unassigned"
                     ? f.key === "attention"
                       ? "text-bad"
@@ -266,8 +266,8 @@ export function StatusBoard({
                 {count}
               </span>
               <span className="min-w-0 leading-tight">
-                <span className="block text-[13px] font-medium">{f.label}</span>
-                <span className="block text-[11px] text-muted-foreground">
+                <span className="block text-[14px] font-medium">{f.label}</span>
+                <span className="block text-[12px] text-muted-foreground">
                   {on ? "Showing only these — click to clear" : f.hint}
                 </span>
               </span>
@@ -374,8 +374,8 @@ export function StatusBoard({
               >
                 <header className="flex items-center gap-2 px-3 py-2.5">
                   <StatusGlyph status={status} size={12} />
-                  <h2 className="text-[13px] font-semibold">{meta.label}</h2>
-                  <span className="rounded-full bg-background px-1.5 text-[11px] font-medium tabular-nums text-muted-foreground ring-1 ring-border">
+                  <h2 className="text-[14px] font-semibold">{meta.label}</h2>
+                  <span className="rounded-full bg-background px-1.5 text-[12px] font-medium tabular-nums text-muted-foreground ring-1 ring-border">
                     {cards.length + hidden}
                   </span>
                 </header>
@@ -532,7 +532,7 @@ function BoardCard({
       <div className="flex items-start gap-2">
         <ProjectLogo badge={badge} project={row.project_name} />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[13px] font-semibold">
+          <div className="truncate text-[14px] font-semibold">
             {row.app_name || row.project_name}
           </div>
           <div className="truncate text-[12px] text-muted-foreground">
@@ -549,16 +549,16 @@ function BoardCard({
             <MoreHorizontalIcon className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel className="text-[11px] text-muted-foreground">
+            <DropdownMenuLabel className="text-[12px] text-muted-foreground">
               Move to
             </DropdownMenuLabel>
             <StatusMenuItems current={status} onPick={onMove} />
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="text-[13px]">
+            <DropdownMenuItem asChild className="text-[14px]">
               <Link href={`/releases/${row.release_id}`}>Open release</Link>
             </DropdownMenuItem>
             {row.store_url && (
-              <DropdownMenuItem asChild className="text-[13px]">
+              <DropdownMenuItem asChild className="text-[14px]">
                 <a href={row.store_url} target="_blank" rel="noreferrer">
                   Store listing <ExternalLinkIcon className="ml-auto size-3.5" />
                 </a>
@@ -571,12 +571,12 @@ function BoardCard({
       <div className="mt-2 flex items-center gap-1.5">
         <StoreIcon platform={row.platform} size={13} />
         {row.build_version && (
-          <span className="truncate font-mono text-[11px] text-muted-foreground">
+          <span className="truncate font-mono text-[12px] text-muted-foreground">
             {row.build_version}
           </span>
         )}
         <span
-          className={`ml-auto text-[11px] tabular-nums ${
+          className={`ml-auto text-[12px] tabular-nums ${
             stale ? "font-semibold text-warn" : "text-muted-foreground"
           }`}
           title={`${days} days in ${STATUSES[status].label}`}
@@ -586,7 +586,7 @@ function BoardCard({
         <Tooltip>
           <TooltipTrigger asChild>
             <span
-              className={`grid size-5 place-items-center rounded-full text-[9px] font-semibold uppercase ${
+              className={`grid size-5 place-items-center rounded-full text-[11px] font-semibold uppercase ${
                 row.assignee_name
                   ? "bg-primary text-primary-foreground"
                   : "border border-dashed text-muted-foreground"
@@ -612,14 +612,14 @@ function BoardCard({
               Live on {PLATFORMS[row.platform].label}
             </span>
             {live.version && (
-              <span className="ml-auto shrink-0 rounded bg-card px-1.5 font-mono text-[11px] font-semibold text-good ring-1 ring-[var(--st-production)]/30">
+              <span className="ml-auto shrink-0 rounded bg-card px-1.5 font-mono text-[12px] font-semibold text-good ring-1 ring-[var(--st-production)]/30">
                 v{live.version}
               </span>
             )}
           </div>
           <div className="mt-1.5 flex items-center justify-between gap-2">
             <span
-              className="truncate text-[11px] text-muted-foreground"
+              className="truncate text-[12px] text-muted-foreground"
               title={live.updatedAt ? `The store updated it ${new Date(live.updatedAt).toLocaleString()}` : undefined}
             >
               {live.updatedAt ? timeAgo(live.updatedAt) : "now"}
@@ -627,7 +627,7 @@ function BoardCard({
             <button
               type="button"
               onClick={() => onMove("production")}
-              className="shrink-0 rounded-md bg-[var(--st-production)] px-2 py-1 text-[11px] font-semibold text-white shadow-sm transition hover:brightness-110"
+              className="shrink-0 rounded-md bg-[var(--st-production)] px-2 py-1 text-[12px] font-semibold text-white shadow-sm transition hover:brightness-110"
               title="Mark it Production in the tracker"
             >
               Move to Production →
@@ -669,8 +669,8 @@ type Group = ReturnType<typeof groupByClient>[number];
 function GroupLabel({ group }: { group: Group }) {
   return (
     <div className="flex items-center gap-1.5 px-1 pt-1">
-      <span className="truncate text-[11px] font-semibold">{group.clientName}</span>
-      <span className="font-mono text-[10px] text-muted-foreground">#{group.ticket}</span>
+      <span className="truncate text-[12px] font-semibold">{group.clientName}</span>
+      <span className="font-mono text-[11px] text-muted-foreground">#{group.ticket}</span>
     </div>
   );
 }
@@ -749,17 +749,17 @@ function ClientGroup({
           style={{ borderLeftColor: STATUSES[status].hex, borderLeftWidth: 3 }}
         >
           <span className="flex w-full items-center gap-1.5">
-            <span className="truncate text-[13px] font-semibold">{group.clientName}</span>
+            <span className="truncate text-[14px] font-semibold">{group.clientName}</span>
             {liveCount > 0 && !expanded && (
               <span
-                className="shrink-0 rounded-full bg-good-soft px-1.5 text-[10px] font-semibold text-good"
+                className="shrink-0 rounded-full bg-good-soft px-1.5 text-[11px] font-semibold text-good"
                 title="The store already shows these — move them to Production"
               >
                 {liveCount} live
               </span>
             )}
-            <span className="font-mono text-[10px] text-muted-foreground">#{group.ticket}</span>
-            <span className="ml-auto flex items-center gap-0.5 rounded-full bg-muted px-1.5 text-[11px] font-medium tabular-nums text-muted-foreground">
+            <span className="font-mono text-[11px] text-muted-foreground">#{group.ticket}</span>
+            <span className="ml-auto flex items-center gap-0.5 rounded-full bg-muted px-1.5 text-[12px] font-medium tabular-nums text-muted-foreground">
               {expanded ? "Fold" : `${group.rows.length} apps`}
               <ChevronRightIcon
                 className={`size-3 transition-transform duration-300 ${expanded ? "-rotate-90" : "rotate-90"}`}
@@ -783,7 +783,7 @@ function ClientGroup({
                   ))}
                 </span>
                 {projects.length > 4 && (
-                  <span className="text-[11px] text-muted-foreground">+{projects.length - 4}</span>
+                  <span className="text-[12px] text-muted-foreground">+{projects.length - 4}</span>
                 )}
                 <span className="flex items-center gap-1 pl-1">
                   {stores.map((s) => (
@@ -791,7 +791,7 @@ function ClientGroup({
                   ))}
                 </span>
                 <span
-                  className={`ml-auto text-[11px] tabular-nums ${
+                  className={`ml-auto text-[12px] tabular-nums ${
                     stale ? "font-semibold text-warn" : "text-muted-foreground"
                   }`}
                   title={`Oldest has waited ${oldest} days in ${STATUSES[status].label}`}
@@ -803,7 +803,7 @@ function ClientGroup({
                     <span
                       key={name || "none"}
                       title={name || "Unassigned"}
-                      className={`grid size-5 place-items-center rounded-full text-[9px] font-semibold uppercase ring-2 ring-card ${
+                      className={`grid size-5 place-items-center rounded-full text-[11px] font-semibold uppercase ring-2 ring-card ${
                         name
                           ? "bg-primary text-primary-foreground"
                           : "border border-dashed bg-card text-muted-foreground"
@@ -866,7 +866,7 @@ function FilterSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger size="sm" aria-label={label} className="h-8 min-w-36 bg-card text-[13px]">
+      <SelectTrigger size="sm" aria-label={label} className="h-8 min-w-36 bg-card text-[14px]">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -874,7 +874,7 @@ function FilterSelect({
           o === "---" ? (
             <SelectSeparator key={`sep-${i}`} />
           ) : (
-            <SelectItem key={o.value} value={o.value} className="text-[13px]">
+            <SelectItem key={o.value} value={o.value} className="text-[14px]">
               {o.label}
             </SelectItem>
           ),

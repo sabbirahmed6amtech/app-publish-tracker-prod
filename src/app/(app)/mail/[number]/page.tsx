@@ -31,7 +31,7 @@ function Prop({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex min-h-9 items-center gap-3 px-4 py-1">
       <dt className="w-[84px] shrink-0 text-[12px] text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 flex-1 text-[13px]">{children}</dd>
+      <dd className="min-w-0 flex-1 text-[14px]">{children}</dd>
     </div>
   );
 }
@@ -46,7 +46,7 @@ function MailEntry({ mail }: { mail: StoreMail }) {
         <header className="flex items-center gap-2 border-b bg-muted/30 px-3 py-1.5">
           <span className="truncate text-[12px] font-medium">{senderName(mail.sender)}</span>
           <span className="shrink-0 text-[12px] text-muted-foreground">{when(mail.received_at)}</span>
-          <GmailButton mail={mail} label="Open" className="btn btn-ghost ml-auto h-6 px-1.5 text-[11px]" />
+          <GmailButton mail={mail} label="Open" className="btn btn-ghost ml-auto h-6 px-1.5 text-[12px]" />
         </header>
         <div className="space-y-1.5 px-3 py-2.5">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -54,7 +54,7 @@ function MailEntry({ mail }: { mail: StoreMail }) {
             <KindLabel kind={mail.kind} />
           </div>
           {mail.snippet && (
-            <p className="whitespace-pre-line text-[13px] leading-relaxed text-foreground/80">
+            <p className="whitespace-pre-line text-[14px] leading-relaxed text-foreground/80">
               {mail.snippet}
             </p>
           )}
@@ -75,7 +75,7 @@ function NoteEntry({ event }: { event: TicketEvent }) {
           <span className="font-medium">{event.actor ?? "Someone"}</span>
           <span className="text-muted-foreground">left a note · {when(event.created_at)}</span>
         </header>
-        <p className="whitespace-pre-wrap px-3 py-2.5 text-[13px] leading-relaxed">{event.body}</p>
+        <p className="whitespace-pre-wrap px-3 py-2.5 text-[14px] leading-relaxed">{event.body}</p>
       </article>
     </li>
   );
@@ -195,7 +195,7 @@ export default async function TicketPage({ params }: { params: Promise<{ number:
           <h1 className="text-[20px] font-semibold leading-snug tracking-tight">
             {cleanSubject(ticket.subject, ticket.app_label)}
           </h1>
-          <p className="mt-1.5 text-[13px] text-muted-foreground">
+          <p className="mt-1.5 text-[14px] text-muted-foreground">
             {ticket.app_name || ticket.project_name || ticket.app_label || "Unknown app"}
             {ticket.client_name ? ` · ${ticket.client_name}` : ""} · {MAIL_SOURCES[ticket.source]} · opened{" "}
             {when(ticket.opened_at)}
@@ -268,7 +268,7 @@ export default async function TicketPage({ params }: { params: Promise<{ number:
                 </Prop>
               )}
               <Prop label="Type">
-                <KindLabel kind={ticket.kind} className="text-[13px] text-foreground" />
+                <KindLabel kind={ticket.kind} className="text-[14px] text-foreground" />
               </Prop>
               <Prop label="Source">
                 <span className="inline-flex items-center gap-1.5">

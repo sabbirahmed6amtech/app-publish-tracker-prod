@@ -43,7 +43,7 @@ export function BrandLoader({
       </div>
 
       {/* Stacked in one grid cell so they swap in place. */}
-      <div className="grid text-center text-[13px] text-muted-foreground">
+      <div className="grid text-center text-[14px] text-muted-foreground">
         {lines.map((line, i) => (
           <span
             key={line}

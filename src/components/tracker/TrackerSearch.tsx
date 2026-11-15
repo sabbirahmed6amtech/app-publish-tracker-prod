@@ -41,7 +41,7 @@ export function TrackerSearch({
         if (timer.current) clearTimeout(timer.current);
         go(q);
       }}
-      className={`flex items-center gap-2.5 rounded-xl border bg-card shadow-xs transition-colors focus-within:border-ring ${
+      className={`flex items-center gap-2.5 rounded-xl border bg-card shadow-xs transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 ${
         size === "lg" ? "h-12 px-4" : "h-9 px-3"
       }`}
     >
@@ -62,7 +62,7 @@ export function TrackerSearch({
         aria-label="Search for a client"
         autoComplete="off"
         className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground ${
-          size === "lg" ? "text-[15px]" : "text-[13px]"
+          size === "lg" ? "text-[16px]" : "text-[14px]"
         }`}
       />
       {pending && <Spinner />}

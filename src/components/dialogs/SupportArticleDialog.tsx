@@ -104,7 +104,7 @@ export function SupportArticleDialog({
                 rows={10}
                 defaultValue={article?.body ?? ""}
                 placeholder="What causes it and the steps to fix it."
-                className="field resize-y text-[13px] leading-relaxed"
+                className="field resize-y text-[14px] leading-relaxed"
               />
             </div>
 

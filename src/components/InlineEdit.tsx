@@ -151,13 +151,13 @@ export function InlineAssignee({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
         {team.map((m) => (
-          <DropdownMenuItem key={m.id} onSelect={() => pick(m.id)} className="text-[13px]">
+          <DropdownMenuItem key={m.id} onSelect={() => pick(m.id)} className="text-[14px]">
             {m.name}
             {m.id === shown && <CheckIcon className="ml-auto size-3.5" />}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => pick(null)} className="text-[13px] text-muted-foreground">
+        <DropdownMenuItem onSelect={() => pick(null)} className="text-[14px] text-muted-foreground">
           Unassigned
           {!shown && <CheckIcon className="ml-auto size-3.5" />}
         </DropdownMenuItem>

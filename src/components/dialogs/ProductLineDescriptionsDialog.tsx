@@ -92,15 +92,15 @@ export function ProductLineDescriptionsDialog({
       >
         <div className="max-h-[65vh] space-y-5 overflow-y-auto px-5 py-4">
           {rows.length === 0 ? (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-[14px] text-muted-foreground">
               This line has no projects yet. Add some under Edit first.
             </p>
           ) : (
             rows.map((r, i) => (
               <section key={r.project_name} className="rounded-lg border p-3">
                 <div className="mb-2 flex items-baseline justify-between gap-2">
-                  <h3 className="text-[13px] font-semibold">{roleLabel(r.project_name, line.name)} app</h3>
-                  <span className="font-mono text-[11px] text-muted-foreground">{r.project_name}</span>
+                  <h3 className="text-[14px] font-semibold">{roleLabel(r.project_name, line.name)} app</h3>
+                  <span className="font-mono text-[12px] text-muted-foreground">{r.project_name}</span>
                 </div>
 
                 <label className="label" htmlFor={`short-${i}`}>
@@ -131,7 +131,7 @@ export function ProductLineDescriptionsDialog({
                   maxLength={PLAY_LIMITS.longDescription}
                   onChange={(e) => set(i, "long")(e.target.value)}
                   placeholder="What the app does, as it should appear on the store"
-                  className="field resize-y text-[13px]"
+                  className="field resize-y text-[14px]"
                 />
               </section>
             ))

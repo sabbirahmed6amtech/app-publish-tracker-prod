@@ -109,16 +109,16 @@ export async function ReportsOverview() {
         <section className="card overflow-hidden">
           <div className="flex items-baseline justify-between border-b border-border px-4 py-2.5">
             <div>
-              <h2 className="text-[13px] font-semibold text-foreground">Open releases</h2>
-              <p className="text-[11px] text-muted-foreground">Still in flight, oldest first.</p>
+              <h2 className="text-[14px] font-semibold text-foreground">Open releases</h2>
+              <p className="text-[12px] text-muted-foreground">Still in flight, oldest first.</p>
             </div>
-            <span className="text-[13px] font-semibold text-foreground">
+            <span className="text-[14px] font-semibold text-foreground">
               {openReleases.length}
             </span>
           </div>
 
           {openReleases.length === 0 ? (
-            <p className="px-4 py-10 text-center text-[13px] text-muted-foreground/80">
+            <p className="px-4 py-10 text-center text-[14px] text-muted-foreground/80">
               Nothing open. Every release is fully live.
             </p>
           ) : (
@@ -135,16 +135,16 @@ export async function ReportsOverview() {
                     >
                       <span className={`size-2 shrink-0 rounded-full ${RELEASE_STATES[state].dot}`} />
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-[13px] font-medium text-foreground">
+                        <div className="truncate text-[14px] font-medium text-foreground">
                           {client.name} · {releaseLabel(release)}
                         </div>
-                        <div className="truncate text-[11px] text-muted-foreground">
+                        <div className="truncate text-[12px] text-muted-foreground">
                           {(release.assigned_to && names.get(release.assigned_to)) || "Unassigned"} ·{" "}
                           {release.apps.length} apps ·{" "}
                           {live} live
                         </div>
                       </div>
-                      <span className="shrink-0 text-right text-[11px] text-muted-foreground/80">
+                      <span className="shrink-0 text-right text-[12px] text-muted-foreground/80">
                         {formatDate(release.started_on)}
                       </span>
                     </Link>
@@ -159,12 +159,12 @@ export async function ReportsOverview() {
         {activity.length > 0 && (
           <section className="card overflow-hidden">
             <div className="border-b border-border px-4 py-2.5">
-              <h2 className="text-[13px] font-semibold text-foreground">Recent activity</h2>
+              <h2 className="text-[14px] font-semibold text-foreground">Recent activity</h2>
             </div>
             <ul className="divide-y divide-border/60">
               {activity.map((e) => (
-                <li key={e.id} className="flex items-center gap-3 px-4 py-2 text-[13px]">
-                  <span className="w-20 shrink-0 text-[11px] text-muted-foreground/80">
+                <li key={e.id} className="flex items-center gap-3 px-4 py-2 text-[14px]">
+                  <span className="w-20 shrink-0 text-[12px] text-muted-foreground/80">
                     {relative(e.created_at)}
                   </span>
                   <span className="min-w-0 flex-1 truncate text-foreground/85">
@@ -193,10 +193,10 @@ export async function ReportsOverview() {
 function Stat({ label, value, tone }: { label: string; value: number; tone?: string }) {
   return (
     <div className="px-4 py-3.5">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
-      <div className={`mt-0.5 text-[22px] font-semibold ${tone ?? "text-foreground"}`}>
+      <div className={`mt-0.5 text-[24px] font-semibold ${tone ?? "text-foreground"}`}>
         {value}
       </div>
     </div>
@@ -218,14 +218,14 @@ function QueueCard({
     <section className="card overflow-hidden">
       <div className="flex items-baseline justify-between border-b border-border px-4 py-2.5">
         <div>
-          <h2 className="text-[13px] font-semibold text-foreground">{title}</h2>
-          <p className="text-[11px] text-muted-foreground">{hint}</p>
+          <h2 className="text-[14px] font-semibold text-foreground">{title}</h2>
+          <p className="text-[12px] text-muted-foreground">{hint}</p>
         </div>
-        <span className="text-[13px] font-semibold text-foreground">{rows.length}</span>
+        <span className="text-[14px] font-semibold text-foreground">{rows.length}</span>
       </div>
 
       {rows.length === 0 ? (
-        <p className="px-4 py-10 text-center text-[13px] text-muted-foreground/80">{empty}</p>
+        <p className="px-4 py-10 text-center text-[14px] text-muted-foreground/80">{empty}</p>
       ) : (
         <ul className="divide-y divide-border/60">
           {rows.slice(0, 8).map((r) => (
@@ -235,10 +235,10 @@ function QueueCard({
                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[13px] font-medium text-foreground">
+                  <div className="truncate text-[14px] font-medium text-foreground">
                     {r.app_name || r.project_name}
                   </div>
-                  <div className="truncate text-[11px] text-muted-foreground">
+                  <div className="truncate text-[12px] text-muted-foreground">
                     {r.client_name} · {r.release_label} · {PLATFORMS[r.platform].label}
                     {r.assignee_name ? ` · ${r.assignee_name}` : ""}
                     {r.note ? ` · ${r.note}` : ""}
@@ -246,7 +246,7 @@ function QueueCard({
                 </div>
                 <div className="shrink-0 text-right">
                   <StatusChip status={r.status} />
-                  <div className="mt-0.5 text-[11px] text-muted-foreground/80">
+                  <div className="mt-0.5 text-[12px] text-muted-foreground/80">
                     {daysSince(r.status_changed_at)}d
                   </div>
                 </div>

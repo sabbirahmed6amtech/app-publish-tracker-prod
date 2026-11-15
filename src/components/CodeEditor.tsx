@@ -64,7 +64,7 @@ export function CodeEditor({
   }
 
   return (
-    <div className="relative flex rounded-md border border-neutral-800 bg-neutral-900 font-mono text-[12px] leading-5 focus-within:border-neutral-600">
+    <div className="relative flex rounded-md border border-neutral-800 bg-neutral-900 font-mono text-[12px] leading-5 focus-within:border-neutral-500 focus-within:ring-2 focus-within:ring-neutral-500/40">
       <div
         aria-hidden
         className="select-none rounded-l-md border-r border-neutral-800 bg-neutral-950/60 px-2 py-2 text-right text-neutral-500"

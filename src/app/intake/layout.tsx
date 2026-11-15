@@ -19,7 +19,7 @@ export default function IntakeLayout({ children }: { children: React.ReactNode }
           <BrandMark className="size-7" />
           <span className="leading-tight">
             <span className="block text-[14px] font-semibold">Publish Tracker</span>
-            <span className="block text-[11px] text-muted-foreground">Store details</span>
+            <span className="block text-[12px] text-muted-foreground">Store details</span>
           </span>
           <ThemeToggle className="ml-auto" />
         </div>

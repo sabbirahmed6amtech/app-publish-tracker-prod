@@ -142,7 +142,7 @@ export function NavigationProgress() {
         />
       </div>
       <div
-        className="absolute right-3 top-2.5 size-4 animate-spin rounded-full border-2 border-primary/25 border-t-primary"
+        className="absolute right-3 top-2.5 size-4 animate-spin rounded-full motion-reduce:animate-none border-2 border-primary/25 border-t-primary"
         style={{ opacity: visible && width < 100 ? 1 : 0, transition: "opacity 200ms ease" }}
       />
     </div>

@@ -41,7 +41,7 @@ export function StatusMenuItems({
           key={s}
           disabled={s === current}
           onSelect={() => onPick(s)}
-          className="gap-2 text-[13px]"
+          className="gap-2 text-[14px]"
         >
           <StatusGlyph status={s} size={12} />
           {STATUSES[s].label}

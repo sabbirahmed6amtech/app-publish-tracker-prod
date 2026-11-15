@@ -83,7 +83,7 @@ export function KeystoreDialog({
                   JKS file
                 </label>
                 {hasFile ? (
-                  <div className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-[13px]">
+                  <div className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-[14px]">
                     <span
                       className="min-w-0 flex-1 truncate font-mono"
                       title={keystore?.file_name ?? ""}

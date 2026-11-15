@@ -24,7 +24,7 @@ export function PageTabs({
             href={href}
             scroll={false}
             aria-current={active ? "page" : undefined}
-            className={`-mb-px inline-flex h-9 shrink-0 items-center gap-1.5 border-b-2 px-3 text-[13px] font-medium transition-colors ${
+            className={`-mb-px inline-flex h-9 shrink-0 items-center gap-1.5 border-b-2 px-3 text-[14px] font-medium transition-colors ${
               active
                 ? "border-foreground text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -32,7 +32,7 @@ export function PageTabs({
           >
             {t.label}
             {t.count !== undefined && (
-              <span className="rounded-full bg-muted px-1.5 text-[11px] tabular-nums text-muted-foreground">
+              <span className="rounded-full bg-muted px-1.5 text-[12px] tabular-nums text-muted-foreground">
                 {t.count}
               </span>
             )}

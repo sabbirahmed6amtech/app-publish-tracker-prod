@@ -134,7 +134,7 @@ export function AppPreviewSheet({
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-[var(--st-production)] opacity-60" />
             <span className="relative inline-flex size-2.5 rounded-full bg-[var(--st-production)]" />
           </span>
-          <div className="min-w-0 text-[13px]">
+          <div className="min-w-0 text-[14px]">
             <p className="font-semibold text-good">
               Live on {storeName} · v{store?.version}
             </p>
@@ -193,7 +193,7 @@ export function AppPreviewSheet({
         </Field>
         <Field label="On store">
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 text-[13px]">
+            <div className="min-w-0 text-[14px]">
               {!store || store.live === null ? (
                 <span className="text-muted-foreground">Not checked yet</span>
               ) : store.live ? (
@@ -205,9 +205,9 @@ export function AppPreviewSheet({
               ) : (
                 <span className="text-muted-foreground">Not on the store yet</span>
               )}
-              {store?.error && <p className="text-[11px] text-bad">Last check failed: {store.error}</p>}
+              {store?.error && <p className="text-[12px] text-bad">Last check failed: {store.error}</p>}
               {store?.checkedAt && (
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[12px] text-muted-foreground">
                   Checked {new Date(store.checkedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
                 </p>
               )}
@@ -251,7 +251,7 @@ export function AppPreviewSheet({
           )}
         </Field>
         <div className="py-2.5">
-          <dt className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <dt className="mb-1.5 text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
             JKS details
           </dt>
           <dd>
@@ -264,7 +264,7 @@ export function AppPreviewSheet({
                 readOnly
               />
             ) : (
-              <span className="text-[13px] text-muted-foreground/50">—</span>
+              <span className="text-[14px] text-muted-foreground/50">—</span>
             )}
           </dd>
         </div>
@@ -292,11 +292,11 @@ function Field({
 }) {
   return (
     <div className="grid grid-cols-[120px_1fr] items-start gap-3 py-2.5">
-      <dt className="pt-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <dt className="pt-0.5 text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </dt>
       <dd
-        className={`flex min-w-0 items-start gap-1 text-[13px] text-foreground ${
+        className={`flex min-w-0 items-start gap-1 text-[14px] text-foreground ${
           mono ? "font-mono text-[12px]" : ""
         }`}
       >

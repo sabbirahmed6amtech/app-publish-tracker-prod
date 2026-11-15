@@ -38,8 +38,8 @@ function LoginForm() {
       <div className="mb-5 flex items-center gap-2.5">
         <BrandMark className="size-7" />
         <div className="leading-tight">
-          <div className="text-[15px] font-semibold">Publish Tracker</div>
-          <div className="text-[11px] text-muted-foreground">Store submissions</div>
+          <div className="text-[16px] font-semibold">Publish Tracker</div>
+          <div className="text-[12px] text-muted-foreground">Store submissions</div>
         </div>
       </div>
 
@@ -85,7 +85,7 @@ function LoginForm() {
         )}
       </button>
 
-      <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground/80">
+      <p className="mt-4 text-[12px] leading-relaxed text-muted-foreground/80">
         No account yet? Ask an admin to add you.
       </p>
     </form>

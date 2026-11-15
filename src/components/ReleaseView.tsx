@@ -130,9 +130,9 @@ export function ReleaseView({
       <div className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-[15px] font-semibold">{releaseLabel(release)}</h2>
+            <h2 className="text-[16px] font-semibold">{releaseLabel(release)}</h2>
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${RELEASE_STATES[state].chip}`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium ring-1 ring-inset ${RELEASE_STATES[state].chip}`}
             >
               <span className={`size-1.5 rounded-full ${RELEASE_STATES[state].dot}`} />
               {RELEASE_STATES[state].label}
@@ -179,7 +179,7 @@ export function ReleaseView({
       {apps.length === 0 ? (
         <div className="px-6 py-12 text-center">
           <p className="text-[14px] font-medium">Nothing in this release yet.</p>
-          <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
+          <p className="mx-auto mt-1 max-w-md text-[14px] text-muted-foreground">
             Use <strong className="font-medium text-foreground">Add apps</strong> to submit this
             client&apos;s apps in this round.
           </p>
@@ -255,7 +255,7 @@ export function ReleaseView({
                             <div className="truncate font-medium">
                               {app.app_name || app.project_name}
                             </div>
-                            <div className="truncate text-[11px] text-muted-foreground">
+                            <div className="truncate text-[12px] text-muted-foreground">
                               {app.project_name}
                             </div>
                           </div>
@@ -269,7 +269,7 @@ export function ReleaseView({
                             if (!liveButNotMoved(store, app.status, app.build_version, release.version)) return null;
                             return (
                               <span
-                                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-good-soft px-2 py-0.5 text-[11px] font-semibold text-good ring-1 ring-[var(--st-production)]/30"
+                                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-good-soft px-2 py-0.5 text-[12px] font-semibold text-good ring-1 ring-[var(--st-production)]/30"
                                 title={`${PLATFORMS[platform].label} already shows this version — move it to Production`}
                               >
                                 <span className="relative flex size-1.5">
@@ -286,7 +286,7 @@ export function ReleaseView({
                           })()}
                           {isStale(app.status, app.status_changed_at) && (
                             <span
-                              className="text-[11px] font-medium text-warn"
+                              className="text-[12px] font-medium text-warn"
                               title={`No change in ${daysSince(app.status_changed_at)} days`}
                             >
                               {daysSince(app.status_changed_at)}d

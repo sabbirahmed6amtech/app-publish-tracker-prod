@@ -68,8 +68,8 @@ export default async function ClientsPage() {
 
       {clients.length === 0 ? (
         <div className="card px-6 py-16 text-center">
-          <p className="text-[15px] font-semibold">No clients yet.</p>
-          <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
+          <p className="text-[16px] font-semibold">No clients yet.</p>
+          <p className="mx-auto mt-1 max-w-md text-[14px] text-muted-foreground">
             Set one up — client, stores, apps and keystore in one go — and its first release
             starts right away.
           </p>

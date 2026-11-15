@@ -46,7 +46,7 @@ export default async function TrackClientPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/track"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-[14px] font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeftIcon className="size-4" /> All clients
         </Link>
@@ -61,8 +61,8 @@ export default async function TrackClientPage({
         <Overview name={client.name} ticket={client.ticket} release={current} />
       ) : (
         <section className="rounded-2xl border bg-card p-6 shadow-xs">
-          <h1 className="text-[22px] font-semibold tracking-tight">{client.name}</h1>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <h1 className="text-[24px] font-semibold tracking-tight">{client.name}</h1>
+          <p className="mt-1 text-[14px] text-muted-foreground">
             Ticket #{client.ticket} · Nothing has been submitted yet.
           </p>
         </section>
@@ -157,7 +157,7 @@ function Overview({
               {state.label}
             </span>
           </div>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-[14px] text-muted-foreground">
             Ticket <span className="font-mono">#{ticket}</span> ·{" "}
             <span className="font-medium text-foreground">{release.label}</span> ·{" "}
             {release.released_on
@@ -183,7 +183,7 @@ function Overview({
       </div>
 
       <div className="mt-5">
-        <div className="mb-1.5 flex items-baseline justify-between text-[13px]">
+        <div className="mb-1.5 flex items-baseline justify-between text-[14px]">
           <span className="font-medium">
             {live} of {total} {total === 1 ? "app" : "apps"} live
           </span>
@@ -236,7 +236,7 @@ function StoreCard({
     >
       <header className="flex items-center gap-2.5 border-b px-5 py-3">
         <StoreIcon platform={platform} size={18} />
-        <h2 className="text-[15px] font-semibold">{PLATFORMS[platform].label}</h2>
+        <h2 className="text-[16px] font-semibold">{PLATFORMS[platform].label}</h2>
         <span className="ml-auto text-[12px] tabular-nums text-muted-foreground">
           {live}/{apps.length} live
         </span>
@@ -269,7 +269,7 @@ function StoreCard({
                   )}
                 </div>
                 {a.assignee && a.assignee !== owner && (
-                  <div className="mt-1 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <div className="mt-1 inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
                     <Avatar name={a.assignee} size="xs" />
                     {displayName(a.assignee)}
                   </div>
@@ -287,7 +287,7 @@ function StoreCard({
                   <StatusGlyph status={a.status} size={11} />
                   {STATUSES[a.status].label}
                 </span>
-                <div className="mt-1 text-[11px] text-muted-foreground">
+                <div className="mt-1 text-[12px] text-muted-foreground">
                   {a.status === "production" ? "since " : "for "}
                   {duration(a.status_changed_at)}
                 </div>
@@ -319,7 +319,7 @@ function PastReleases({ releases }: { releases: TrackerRelease[] }) {
       style={{ animationDelay: "0.35s" }}
     >
       <header className="border-b px-5 py-3">
-        <h2 className="text-[15px] font-semibold">Earlier releases</h2>
+        <h2 className="text-[16px] font-semibold">Earlier releases</h2>
       </header>
       <ul className="divide-y">
         {releases.map((r) => {
@@ -355,10 +355,10 @@ function Activity({ items }: { items: TrackerClient["activity"] }) {
       style={{ animationDelay: "0.15s" }}
     >
       <header className="border-b px-5 py-3">
-        <h2 className="text-[15px] font-semibold">Recent updates</h2>
+        <h2 className="text-[16px] font-semibold">Recent updates</h2>
       </header>
       {items.length === 0 ? (
-        <p className="px-5 py-8 text-center text-[13px] text-muted-foreground">No updates yet.</p>
+        <p className="px-5 py-8 text-center text-[14px] text-muted-foreground">No updates yet.</p>
       ) : (
         <ol className="relative space-y-4 px-5 py-4">
           {items.map((e, i) => (
@@ -371,7 +371,7 @@ function Activity({ items }: { items: TrackerClient["activity"] }) {
                 {e.to ? <StatusGlyph status={e.to} size={14} /> : null}
               </span>
               <div className="min-w-0 leading-snug">
-                <p className="text-[13px]">
+                <p className="text-[14px]">
                   <span className="font-medium">{e.app}</span>{" "}
                   <span className="inline-flex translate-y-0.5">
                     <StoreIcon platform={e.platform} size={12} />
@@ -385,7 +385,7 @@ function Activity({ items }: { items: TrackerClient["activity"] }) {
                       : "Updated"}
                   {e.version ? ` · v${e.version}` : ""}
                 </p>
-                <p className="text-[11px] text-muted-foreground">{ago(e.at)}</p>
+                <p className="text-[12px] text-muted-foreground">{ago(e.at)}</p>
               </div>
             </li>
           ))}
@@ -409,7 +409,7 @@ function Avatar({ name, size = "sm" }: { name: string; size?: "xs" | "sm" }) {
     <span
       aria-hidden
       className={`grid shrink-0 place-items-center rounded-full bg-primary font-semibold text-primary-foreground ${
-        size === "xs" ? "size-4 text-[8px]" : "size-6 text-[10px]"
+        size === "xs" ? "size-4 text-[11px]" : "size-6 text-[11px]"
       }`}
     >
       {letters || "?"}

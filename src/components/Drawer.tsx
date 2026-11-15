@@ -27,7 +27,7 @@ export function Drawer({
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
       <SheetContent side="right" className="w-full gap-0 sm:max-w-md">
         <SheetHeader className="border-b px-5 py-4 pr-12">
-          <SheetTitle className="truncate text-[15px]">{title}</SheetTitle>
+          <SheetTitle className="truncate text-[16px]">{title}</SheetTitle>
           <SheetDescription className={subtitle ? "text-[12px]" : "sr-only"}>
             {subtitle ?? title}
           </SheetDescription>

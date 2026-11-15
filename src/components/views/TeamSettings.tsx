@@ -19,7 +19,7 @@ export async function TeamSettings() {
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="max-w-2xl text-[13px] text-muted-foreground">
+        <p className="max-w-2xl text-[14px] text-muted-foreground">
           {active.length} active · {team.length} total. Each member signs in with their email
           and password, and can be assigned work.
         </p>
@@ -108,7 +108,7 @@ export async function TeamSettings() {
         </table>
 
         {team.length === 0 && (
-          <p className="px-4 py-10 text-center text-[13px] text-muted-foreground/80">
+          <p className="px-4 py-10 text-center text-[14px] text-muted-foreground/80">
             No members yet. Add someone with their email and a password.
           </p>
         )}

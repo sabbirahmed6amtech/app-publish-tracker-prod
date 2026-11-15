@@ -6,7 +6,7 @@ export function SetupNotice() {
       <p className="mt-2 text-[14px] text-foreground/70">
         The tracker needs its Supabase database and a login secret before it can start.
       </p>
-      <ol className="mt-6 space-y-3 text-[13px] text-foreground/85">
+      <ol className="mt-6 space-y-3 text-[14px] text-foreground/85">
         <li>
           <strong className="font-semibold">1.</strong> Create a Supabase project and run{" "}
           <code className={code}>supabase db push</code> to apply{" "}

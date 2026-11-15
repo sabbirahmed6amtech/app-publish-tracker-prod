@@ -35,8 +35,8 @@ export function PipelineCard({
   if (total === 0) {
     return (
       <section className="card mb-4 px-4 py-10 text-center">
-        <h2 className="text-[13px] font-semibold text-foreground">Pipeline</h2>
-        <p className="mt-1 text-[13px] text-muted-foreground/80">
+        <h2 className="text-[14px] font-semibold text-foreground">Pipeline</h2>
+        <p className="mt-1 text-[14px] text-muted-foreground/80">
           No apps yet — the pipeline fills in as releases get their apps.
         </p>
       </section>
@@ -46,7 +46,7 @@ export function PipelineCard({
   return (
     <section className="card mb-4 px-4 py-4">
       <div className="mb-3.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="text-[13px] font-semibold text-foreground">Pipeline</h2>
+        <h2 className="text-[14px] font-semibold text-foreground">Pipeline</h2>
         <p className="text-[12px] text-muted-foreground">
           <span className="font-semibold text-foreground">{live}</span> of {total} live
           <span className="mx-2 text-muted-foreground/50">·</span>
@@ -87,7 +87,7 @@ export function PipelineCard({
 
       {/* what has fallen out of the flow */}
       <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border/60 pt-3">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
+        <span className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground/80">
           Off the flow
         </span>
         {OFF_RAMPS.map((status) => {
@@ -140,7 +140,7 @@ function StageCard({ stage, total }: { stage: PipelineStage; total: number }) {
         </span>
         {!empty && stage.oldestDays !== null && stage.status !== "production" && (
           <span
-            className="shrink-0 text-[11px] tabular-nums text-muted-foreground/80"
+            className="shrink-0 text-[12px] tabular-nums text-muted-foreground/80"
             title={`Longest-waiting app has been here ${stage.oldestDays} days`}
           >
             {stage.oldestDays}d
@@ -149,11 +149,11 @@ function StageCard({ stage, total }: { stage: PipelineStage; total: number }) {
       </div>
 
       <div className="mt-1 flex items-baseline gap-1.5">
-        <span className="text-[26px] font-semibold leading-none text-foreground">
+        <span className="text-[24px] font-semibold leading-none text-foreground">
           {stage.count}
         </span>
         {!empty && (
-          <span className="text-[11px] text-muted-foreground/80">{Math.round(share)}%</span>
+          <span className="text-[12px] text-muted-foreground/80">{Math.round(share)}%</span>
         )}
       </div>
 

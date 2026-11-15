@@ -10,8 +10,8 @@ export default async function IntakePage({ params }: { params: Promise<{ token: 
   if (!form) {
     return (
       <div className="card mx-auto max-w-md px-6 py-10 text-center">
-        <h1 className="text-[18px] font-semibold">This link isn&apos;t active</h1>
-        <p className="mt-2 text-[13px] text-muted-foreground">
+        <h1 className="text-[20px] font-semibold">This link isn&apos;t active</h1>
+        <p className="mt-2 text-[14px] text-muted-foreground">
           It may have been replaced with a new one. Ask the team that sent it for a fresh link.
         </p>
       </div>

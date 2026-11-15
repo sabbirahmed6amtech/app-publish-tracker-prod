@@ -240,7 +240,7 @@ export default function GuidePage() {
         </article>
 
         <nav className="sticky top-6 hidden h-max w-48 shrink-0 lg:block">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="mb-3 text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
             On this page
           </p>
           <ul className="space-y-0.5 border-l border-border">
@@ -248,7 +248,7 @@ export default function GuidePage() {
               <li key={s.id}>
                 <a
                   href={`#${s.id}`}
-                  className="-ml-px flex items-center gap-2 border-l border-transparent py-1 pl-3 text-[13px] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                  className="-ml-px flex items-center gap-2 border-l border-transparent py-1 pl-3 text-[14px] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                 >
                   <s.Icon className="size-3.5 shrink-0" />
                   {s.label}
@@ -277,7 +277,7 @@ function FlowNode({
         <Icon className="size-[18px]" />
       </span>
       <span className="min-w-0">
-        <span className="block text-[13px] font-semibold text-foreground">{title}</span>
+        <span className="block text-[14px] font-semibold text-foreground">{title}</span>
         <span className="block text-[12px] text-muted-foreground">{sub}</span>
       </span>
     </div>
@@ -289,7 +289,7 @@ function FlowArrow({ label }: { label: string }) {
     <div className="flex shrink-0 items-center justify-center gap-1 px-1 text-muted-foreground sm:flex-col sm:px-2">
       <ArrowDownIcon className="size-4 sm:hidden" />
       <ArrowRightIcon className="hidden size-4 sm:block" />
-      <span className="text-[10px] uppercase tracking-wide">{label}</span>
+      <span className="text-[11px] uppercase tracking-wide">{label}</span>
     </div>
   );
 }
@@ -326,11 +326,11 @@ function ModelRow({
         <Icon className="size-4" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="text-[13px] font-semibold text-foreground">{title}</span>
+        <span className="text-[14px] font-semibold text-foreground">{title}</span>
         <span className="ml-2 text-[12px] text-muted-foreground">{sub}</span>
       </span>
       {tag && (
-        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[12px] text-muted-foreground">
           {tag}
         </span>
       )}
@@ -363,7 +363,7 @@ function BrowserMock() {
         </span>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
-        <span className="text-[13px] font-medium text-foreground">Extensions</span>
+        <span className="text-[14px] font-medium text-foreground">Extensions</span>
         <span className="flex items-center gap-2 text-[12px] text-muted-foreground">
           Developer mode
           <span className="flex h-4 w-7 items-center rounded-full bg-[var(--st-production)]/80 p-0.5">
@@ -403,7 +403,7 @@ function Section({
         <span className="grid size-8 place-items-center rounded-lg bg-muted text-foreground/70">
           <Icon className="size-4" />
         </span>
-        <h2 className="text-[18px] font-semibold text-foreground">{title}</h2>
+        <h2 className="text-[20px] font-semibold text-foreground">{title}</h2>
       </div>
       <div className="space-y-3">{children}</div>
     </section>
@@ -454,7 +454,7 @@ function Callout({ children }: { children: ReactNode }) {
   return (
     <div className="flex gap-2.5 rounded-lg border border-border bg-muted/30 p-3.5">
       <InfoIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-      <p className="text-[13px] leading-relaxed text-foreground/80">{children}</p>
+      <p className="text-[14px] leading-relaxed text-foreground/80">{children}</p>
     </div>
   );
 }

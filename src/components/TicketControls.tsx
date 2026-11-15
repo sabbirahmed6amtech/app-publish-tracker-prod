@@ -32,7 +32,7 @@ function useAction() {
 }
 
 const TRIGGER =
-  "-mx-2 inline-flex h-8 max-w-full items-center gap-2 rounded-md px-2 text-[13px] transition-colors hover:bg-muted disabled:opacity-60";
+  "-mx-2 inline-flex h-8 max-w-full items-center gap-2 rounded-md px-2 text-[14px] transition-colors hover:bg-muted disabled:opacity-60";
 
 export function StatusMenu({ ticketId, status }: { ticketId: string; status: TicketStatus }) {
   const [pending, run] = useAction();
@@ -47,7 +47,7 @@ export function StatusMenu({ ticketId, status }: { ticketId: string; status: Tic
         {ORDER.map((s) => (
           <DropdownMenuItem
             key={s}
-            className="gap-2 text-[13px]"
+            className="gap-2 text-[14px]"
             onSelect={() => s !== status && run(() => setTicketStatus(ticketId, s))}
           >
             <StatusIcon status={s} />
@@ -84,19 +84,19 @@ export function AssigneeMenu({
       <DropdownMenuContent align="start" className="w-56">
         {meId && meId !== assignedTo && (
           <>
-            <DropdownMenuItem className="text-[13px] font-medium" onSelect={() => assign(meId)}>
+            <DropdownMenuItem className="text-[14px] font-medium" onSelect={() => assign(meId)}>
               Assign to me
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem className="gap-2 text-[13px]" onSelect={() => assign(null)}>
+        <DropdownMenuItem className="gap-2 text-[14px]" onSelect={() => assign(null)}>
           <MemberAvatar name={null} />
           <span className="text-muted-foreground">Unassigned</span>
           {!assignedTo && <CheckIcon className="ml-auto size-3.5" />}
         </DropdownMenuItem>
         {members.map((m) => (
-          <DropdownMenuItem key={m.id} className="gap-2 text-[13px]" onSelect={() => assign(m.id)}>
+          <DropdownMenuItem key={m.id} className="gap-2 text-[14px]" onSelect={() => assign(m.id)}>
             <MemberAvatar name={m.name} />
             <span className="truncate">{m.name}</span>
             {m.id === assignedTo && <CheckIcon className="ml-auto size-3.5" />}
@@ -148,15 +148,16 @@ export function NoteComposer({ ticketId, author }: { ticketId: string; author: s
     <div className="flex gap-3">
       <MemberAvatar name={author} size={32} />
       <form
-        className="min-w-0 flex-1 overflow-hidden rounded-lg border bg-card focus-within:border-ring"
+        className="min-w-0 flex-1 overflow-hidden rounded-lg border bg-card focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50"
         onSubmit={(e) => {
           e.preventDefault();
           submit();
         }}
       >
         <textarea
-          className="block min-h-[76px] w-full resize-y bg-transparent px-3 py-2.5 text-[13px] outline-none placeholder:text-muted-foreground"
+          className="block min-h-[76px] w-full resize-y bg-transparent px-3 py-2.5 text-[14px] outline-none placeholder:text-muted-foreground"
           placeholder="Leave an internal note: what was fixed, which build was resubmitted…"
+          aria-label="Internal note"
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
@@ -168,7 +169,7 @@ export function NoteComposer({ ticketId, author }: { ticketId: string; author: s
           disabled={pending}
         />
         <div className="flex items-center justify-between gap-2 border-t bg-muted/30 px-3 py-1.5">
-          <span className="text-[11px] text-muted-foreground">Only your team sees notes · ⌘↵ to save</span>
+          <span className="text-[12px] text-muted-foreground">Only your team sees notes · ⌘↵ to save</span>
           <button type="submit" className="btn btn-primary h-7 px-2.5 text-[12px]" disabled={pending || !text.trim()}>
             {pending ? "Saving…" : "Add note"}
           </button>

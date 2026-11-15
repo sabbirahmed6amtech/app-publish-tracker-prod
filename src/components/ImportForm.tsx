@@ -156,8 +156,8 @@ export function ImportForm() {
     <div className="space-y-4">
       <section className="card overflow-hidden">
         <div className="border-b border-border px-4 py-2.5">
-          <h2 className="text-[13px] font-semibold text-foreground">Paste rows</h2>
-          <p className="text-[11px] text-muted-foreground">
+          <h2 className="text-[14px] font-semibold text-foreground">Paste rows</h2>
+          <p className="text-[12px] text-muted-foreground">
             Tab-separated (straight out of Sheets) or CSV. Blank grouping cells carry down
             from the row above.
           </p>
@@ -168,7 +168,7 @@ export function ImportForm() {
             {COLUMNS.map((col, i) => (
               <span
                 key={col}
-                className="rounded border border-border bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                className="rounded border border-border bg-muted/50 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
               >
                 {i + 1}. {col}
               </span>
@@ -212,7 +212,7 @@ export function ImportForm() {
       {parsed.rows.length > 0 && (
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-            <h2 className="text-[13px] font-semibold text-foreground">
+            <h2 className="text-[14px] font-semibold text-foreground">
               Preview — {parsed.rows.length} rows
               {parsed.skipped > 0 && (
                 <span className="ml-2 font-normal text-muted-foreground">
@@ -257,7 +257,7 @@ export function ImportForm() {
                     <td className="td">{r.app_name}</td>
                     <td className="td">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${STATUSES[r.status].chip}`}
+                        className={`rounded-full px-2 py-0.5 text-[12px] font-medium ring-1 ring-inset ${STATUSES[r.status].chip}`}
                       >
                         {STATUSES[r.status].label}
                       </span>
@@ -271,12 +271,12 @@ export function ImportForm() {
       )}
 
       {result && (
-        <p className="rounded-md bg-good-soft px-3 py-2 text-[13px] text-good">
+        <p className="rounded-md bg-good-soft px-3 py-2 text-[14px] text-good">
           {result}
         </p>
       )}
       {error && (
-        <p className="rounded-md bg-bad-soft px-3 py-2 text-[13px] text-bad">{error}</p>
+        <p className="rounded-md bg-bad-soft px-3 py-2 text-[14px] text-bad">{error}</p>
       )}
     </div>
   );

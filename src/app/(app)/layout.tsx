@@ -88,15 +88,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       <MailAlerts />
+      <a
+        href="#main"
+        className="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000]"
+      >
+        Skip to content
+      </a>
       <Sidebar clients={clients} email={user?.email ?? null} openMail={openMail} />
-      <main className="min-w-0 flex-1">
+      <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none">
         <TopBar
           items={search}
           actions={<NewClientWizard lines={lines} suggestions={suggestions} />}
         />
         <PageContainer>
           {loadError && (
-            <div className="card mb-5 border-bad/30 bg-bad-soft p-4 text-[13px] text-bad">
+            <div className="card mb-5 border-bad/30 bg-bad-soft p-4 text-[14px] text-bad">
               <strong className="font-semibold">Could not load data.</strong> {loadError}
               <div className="mt-1 text-bad">
                 Is the database reachable, and have the{" "}

@@ -176,7 +176,7 @@ export function NewRoundDialog({
             </div>
 
             {apps.length === 0 ? (
-              <p className="rounded-md border bg-muted/40 px-3 py-4 text-center text-[13px] text-muted-foreground">
+              <p className="rounded-md border bg-muted/40 px-3 py-4 text-center text-[14px] text-muted-foreground">
                 This client has no active apps. Add apps first.
               </p>
             ) : (
@@ -191,7 +191,7 @@ export function NewRoundDialog({
                         className="size-4 accent-foreground"
                       />
                       <ProjectLogo badge={a.badge} project={a.project} />
-                      <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                      <span className="min-w-0 flex-1 truncate text-[14px] font-medium">
                         {a.name}
                       </span>
                       <StoreIcon platform={a.platform} size={14} />

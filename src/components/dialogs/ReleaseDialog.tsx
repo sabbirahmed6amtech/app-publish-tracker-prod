@@ -102,7 +102,7 @@ export function ReleaseDialog({
             </div>
 
             {appCount > 0 && (
-              <label className="flex cursor-pointer select-none items-start gap-2 rounded-md bg-muted/50 px-3 py-2 text-[13px] text-foreground/85">
+              <label className="flex cursor-pointer select-none items-start gap-2 rounded-md bg-muted/50 px-3 py-2 text-[14px] text-foreground/85">
                 <input
                   type="checkbox"
                   name="cascade_assignee"
@@ -111,7 +111,7 @@ export function ReleaseDialog({
                 />
                 <span>
                   Also assign the {appCount} {appCount === 1 ? "app" : "apps"} in this release
-                  <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                  <span className="mt-0.5 block text-[12px] text-muted-foreground">
                     Uncheck to keep per-app assignments as they are.
                   </span>
                 </span>

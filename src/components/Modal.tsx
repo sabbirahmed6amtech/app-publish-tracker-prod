@@ -47,7 +47,7 @@ export function Modal({
         className={`max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto p-0 ${WIDTHS[width] ?? WIDTHS["max-w-xl"]}`}
       >
         <DialogHeader className="border-b px-5 py-4 pr-12">
-          <DialogTitle className="text-[15px]">{title}</DialogTitle>
+          <DialogTitle className="text-[16px]">{title}</DialogTitle>
           {subtitle ? (
             <DialogDescription className="text-[12px]">{subtitle}</DialogDescription>
           ) : (

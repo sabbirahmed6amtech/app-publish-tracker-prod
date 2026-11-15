@@ -123,7 +123,7 @@ export function ProductLineDialog({
                 }}
                 className="field py-1 text-[12px] file:mr-2 file:rounded file:border-0 file:bg-muted file:px-2 file:py-0.5 file:text-[12px]"
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 PNG, JPG, WebP or SVG, up to 1 MB. Square works best.
               </p>
             </div>
@@ -140,7 +140,7 @@ export function ProductLineDialog({
                 placeholder={"6amMart-User-App\n6amMart-Store-App\n6amMart-Delivery-App"}
                 className="field resize-y font-mono text-[12px]"
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 One per line. These are offered when setting up a client, and apps with these
                 project names show this line&apos;s logo.
               </p>

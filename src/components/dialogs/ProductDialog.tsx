@@ -79,7 +79,7 @@ export function ProductDialog({
         width="max-w-lg"
       >
         {accounts.length === 0 ? (
-          <p className="px-5 py-6 text-[13px] text-muted-foreground">
+          <p className="px-5 py-6 text-[14px] text-muted-foreground">
             Add a store account first (Credentials tab) — every app is published under one.
           </p>
         ) : (
@@ -147,7 +147,7 @@ export function ProductDialog({
                     {accounts.map((a) => (
                       <label
                         key={a.id}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-[13px] has-checked:border-foreground"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-[14px] has-checked:border-foreground"
                       >
                         <input
                           type="checkbox"

@@ -23,7 +23,7 @@ export async function ProductLinesSettings() {
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="max-w-2xl text-[13px] text-muted-foreground">
+        <p className="max-w-2xl text-[14px] text-muted-foreground">
           Picked when setting up a client, and each line&apos;s logo shows on every app built
           from its projects.
         </p>
@@ -38,7 +38,7 @@ export async function ProductLinesSettings() {
       </div>
 
       {lines.length === 0 ? (
-        <div className="card px-6 py-14 text-center text-[13px] text-muted-foreground">
+        <div className="card px-6 py-14 text-center text-[14px] text-muted-foreground">
           No product lines yet.
         </div>
       ) : (
@@ -54,7 +54,7 @@ export async function ProductLinesSettings() {
                     size="lg"
                   />
                   <div className="min-w-0 flex-1">
-                    <h2 className="truncate text-[15px] font-semibold">{line.name}</h2>
+                    <h2 className="truncate text-[16px] font-semibold">{line.name}</h2>
                     <p className="text-[12px] text-muted-foreground">
                       {line.projects.length} {line.projects.length === 1 ? "project" : "projects"}{" "}
                       · used by {apps} client {apps === 1 ? "app" : "apps"}
@@ -87,7 +87,7 @@ export async function ProductLinesSettings() {
                     {line.projects.map((p) => (
                       <li
                         key={p}
-                        className="rounded-md border bg-muted/40 px-2 py-0.5 font-mono text-[11px]"
+                        className="rounded-md border bg-muted/40 px-2 py-0.5 font-mono text-[12px]"
                       >
                         {p}
                         {usage.get(p) ? (

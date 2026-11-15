@@ -13,7 +13,7 @@ export async function DataSettings() {
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-[14px] text-muted-foreground">
           Move the old sheet in, or take a snapshot out.
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -29,8 +29,8 @@ export async function DataSettings() {
       <ImportForm />
 
       <section className="card mt-4 px-4 py-4">
-        <h2 className="text-[13px] font-semibold text-foreground">How re-importing works</h2>
-        <ul className="mt-2 space-y-1.5 text-[13px] text-foreground/70">
+        <h2 className="text-[14px] font-semibold text-foreground">How re-importing works</h2>
+        <ul className="mt-2 space-y-1.5 text-[14px] text-foreground/70">
           <li>
             Clients match on <strong className="font-medium">ticket number</strong>.
           </li>
@@ -53,8 +53,8 @@ export async function DataSettings() {
           </li>
         </ul>
 
-        <h2 className="mt-5 text-[13px] font-semibold text-foreground">Export columns</h2>
-        <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted-foreground">
+        <h2 className="mt-5 text-[14px] font-semibold text-foreground">Export columns</h2>
+        <p className="mt-1.5 font-mono text-[12px] leading-relaxed text-muted-foreground">
           {EXPORT_HEADERS.join(" · ")}
         </p>
       </section>

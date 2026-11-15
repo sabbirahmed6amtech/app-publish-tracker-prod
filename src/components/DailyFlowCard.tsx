@@ -84,8 +84,8 @@ export function DailyFlowCard({ days }: { days: FlowDay[] }) {
     <section className="card flex h-full flex-col overflow-hidden">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2.5">
         <div>
-          <h2 className="text-[13px] font-semibold text-foreground">Daily opened vs closed</h2>
-          <p className="text-[11px] text-muted-foreground">
+          <h2 className="text-[14px] font-semibold text-foreground">Daily opened vs closed</h2>
+          <p className="text-[12px] text-muted-foreground">
             Apps added against apps reaching Production, last {days.length} days.
           </p>
         </div>
@@ -164,7 +164,7 @@ export function DailyFlowCard({ days }: { days: FlowDay[] }) {
         </svg>
       </div>
 
-      <div className="h-5 shrink-0 px-4 text-center text-[11px] text-muted-foreground">
+      <div className="h-5 shrink-0 px-4 text-center text-[12px] text-muted-foreground">
         {active ? (
           <>
             <span className="font-medium text-foreground">{label(active.date)}</span>
@@ -209,13 +209,13 @@ function Stat({
 }) {
   return (
     <div className="px-4 py-3">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
-      <div className="mt-0.5 text-[18px] font-semibold leading-none" style={{ color: tone ?? "var(--foreground)" }}>
+      <div className="mt-0.5 text-[20px] font-semibold leading-none" style={{ color: tone ?? "var(--foreground)" }}>
         {value}
       </div>
-      <div className="mt-1 truncate text-[11px] text-muted-foreground/80">{hint}</div>
+      <div className="mt-1 truncate text-[12px] text-muted-foreground/80">{hint}</div>
     </div>
   );
 }

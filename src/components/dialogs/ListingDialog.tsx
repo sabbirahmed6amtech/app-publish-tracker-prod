@@ -96,7 +96,7 @@ export function ListingDialog({
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <p className="mt-1 flex items-start gap-1 text-[11px] text-warn">
+                <p className="mt-1 flex items-start gap-1 text-[12px] text-warn">
                   <AlertTriangleIcon className="mt-px size-3 shrink-0" />
                   Must match applicationId in build.gradle — it can never change after publishing.
                 </p>
@@ -172,8 +172,8 @@ export function ListingDialog({
             </section>
 
             <section className="rounded-xl border bg-muted/30 p-3.5">
-              <h3 className="text-[13px] font-semibold">App Review access</h3>
-              <p className="mb-3 text-[11px] text-muted-foreground">
+              <h3 className="text-[14px] font-semibold">App Review access</h3>
+              <p className="mb-3 text-[12px] text-muted-foreground">
                 A working login Google&apos;s reviewers can use. Team-only — never shown on the
                 public tracker.
               </p>
@@ -283,7 +283,7 @@ function LinkField({
             href={value}
             target="_blank"
             rel="noreferrer"
-            className="text-[11px] font-medium text-muted-foreground hover:text-foreground hover:underline"
+            className="text-[12px] font-medium text-muted-foreground hover:text-foreground hover:underline"
           >
             Open
           </a>
@@ -304,7 +304,7 @@ function LinkField({
 function Counter({ value, max }: { value: number; max: number }) {
   return (
     <span
-      className={`text-[11px] tabular-nums ${
+      className={`text-[12px] tabular-nums ${
         value > max ? "font-semibold text-bad" : "text-muted-foreground"
       }`}
     >
@@ -342,7 +342,7 @@ function IosFields({ product }: { product: Product }) {
             autoComplete="off"
             spellCheck={false}
           />
-          <p className="mt-1 flex items-start gap-1 text-[11px] text-warn">
+          <p className="mt-1 flex items-start gap-1 text-[12px] text-warn">
             <AlertTriangleIcon className="mt-px size-3 shrink-0" />
             Register it on developer.apple.com first — App Store Connect only offers registered
             IDs.

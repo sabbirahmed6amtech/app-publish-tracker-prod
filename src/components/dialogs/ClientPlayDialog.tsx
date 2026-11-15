@@ -108,7 +108,7 @@ export function ClientPlayDialog({
                 />
               </div>
             ))}
-            <p className="text-[11px] text-muted-foreground sm:col-span-2">
+            <p className="text-[12px] text-muted-foreground sm:col-span-2">
               The default language must match Play Console&apos;s wording exactly — pick it from
               the list.
             </p>

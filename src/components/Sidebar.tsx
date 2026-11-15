@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRightIcon,
   BookOpenIcon,
@@ -64,6 +64,22 @@ export function Sidebar({
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
+  useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   // Inside a client, its release history joins the rail under the main nav.
   const clientMatch = pathname.match(/^\/clients\/([0-9a-f-]+)/i);
   const releaseMatch = pathname.match(/^\/releases\/([0-9a-f-]+)/i);
@@ -89,16 +105,26 @@ export function Sidebar({
         <span className="text-[14px] font-semibold">Publish Tracker</span>
       </div>
 
+      {open && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={close}
+        />
+      )}
+
       <aside
-        className={`${open ? "block" : "hidden"} w-full shrink-0 border-r bg-sidebar
-                    text-sidebar-foreground lg:block lg:w-[260px]`}
+        className={`${open ? "fixed inset-y-0 left-0 z-50 block w-[85vw] max-w-[320px] overflow-y-auto shadow-xl" : "hidden"}
+                    shrink-0 border-r bg-sidebar text-sidebar-foreground
+                    lg:static lg:z-auto lg:block lg:w-[260px] lg:max-w-none lg:overflow-visible lg:shadow-none`}
       >
         <div className="flex h-full flex-col lg:sticky lg:top-0 lg:h-screen">
           <div className="hidden h-14 items-center gap-2.5 border-b px-4 lg:flex">
             <BrandMark className="size-7" />
             <div className="leading-tight">
               <div className="text-[14px] font-semibold">Publish Tracker</div>
-              <div className="text-[11px] text-muted-foreground">Store submissions</div>
+              <div className="text-[12px] text-muted-foreground">Store submissions</div>
             </div>
           </div>
 
@@ -115,7 +141,7 @@ export function Sidebar({
                   key={item.href}
                   href={item.href}
                   onClick={close}
-                  className={`flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] font-medium
+                  className={`flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[14px] font-medium
                               transition-colors ${
                                 active
                                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
@@ -125,7 +151,7 @@ export function Sidebar({
                   <Icon className="size-4" />
                   {item.label}
                   {item.href === "/mail" && openMail > 0 && (
-                    <span className="ml-auto rounded-full bg-bad-soft px-1.5 text-[11px] font-semibold tabular-nums text-bad">
+                    <span className="ml-auto rounded-full bg-bad-soft px-1.5 text-[12px] font-semibold tabular-nums text-bad">
                       {openMail}
                     </span>
                   )}
@@ -145,13 +171,13 @@ export function Sidebar({
           )}
 
           <div className="flex items-center justify-between border-t px-3 py-2">
-            <span className="text-[11px] font-medium text-muted-foreground">Theme</span>
+            <span className="text-[12px] font-medium text-muted-foreground">Theme</span>
             <ThemeToggle />
           </div>
 
           {email && (
             <div className="flex items-center gap-2.5 border-t px-3 py-2.5">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-muted text-[11px] font-semibold uppercase">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-muted text-[12px] font-semibold uppercase">
                 {email.slice(0, 2)}
               </span>
               <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground" title={email}>
@@ -195,12 +221,12 @@ function ReleaseRail({
           className="group block rounded-xl border bg-background p-3 transition-colors hover:border-ring/60"
         >
           <div className="flex items-center gap-2.5">
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-[13px] font-semibold text-primary-foreground">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-[14px] font-semibold text-primary-foreground">
               {initials(client.name)}
             </span>
             <div className="min-w-0 flex-1 leading-tight">
               <div className="truncate text-[14px] font-semibold">{client.name}</div>
-              <div className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+              <div className="mt-0.5 font-mono text-[12px] text-muted-foreground">
                 Ticket #{client.ticket}
               </div>
             </div>
@@ -218,7 +244,7 @@ function ReleaseRail({
               {client.platforms.map((p) => (
                 <span
                   key={p}
-                  className="inline-flex items-center gap-1 rounded-md border bg-card px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+                  className="inline-flex items-center gap-1 rounded-md border bg-card px-1.5 py-0.5 text-[12px] font-medium text-muted-foreground"
                 >
                   <StoreIcon platform={p} size={11} />
                   {PLATFORMS[p].label}
@@ -230,8 +256,8 @@ function ReleaseRail({
       </div>
 
       <div className="flex items-center justify-between px-4 pb-1.5 pt-1">
-        <span className="text-[11px] font-medium text-muted-foreground">Releases</span>
-        <span className="text-[11px] text-muted-foreground">{client.releases.length}</span>
+        <span className="text-[12px] font-medium text-muted-foreground">Releases</span>
+        <span className="text-[12px] text-muted-foreground">{client.releases.length}</span>
       </div>
 
       <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 pb-3">
@@ -254,9 +280,9 @@ function ReleaseRail({
             >
               <div className="flex items-center gap-2">
                 <span className={`size-2 shrink-0 rounded-full ${meta.dot}`} />
-                <span className="truncate text-[13px] font-medium">{r.label}</span>
+                <span className="truncate text-[14px] font-medium">{r.label}</span>
               </div>
-              <div className="mt-0.5 truncate pl-4 text-[11px] text-muted-foreground">
+              <div className="mt-0.5 truncate pl-4 text-[12px] text-muted-foreground">
                 {r.appCount === 0
                   ? "No apps"
                   : `${r.appCount} ${r.appCount === 1 ? "app" : "apps"}`}
@@ -280,7 +306,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   return (
     <div className="px-1 py-1.5">
       <div className="text-[14px] font-semibold tabular-nums">{value}</div>
-      <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
     </div>

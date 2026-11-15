@@ -62,7 +62,7 @@ export default async function ReleasePage({
 
   return (
     <>
-      <nav className="mb-4 flex items-center gap-1 text-[13px] text-muted-foreground">
+      <nav className="mb-4 flex items-center gap-1 text-[14px] text-muted-foreground">
         <Link href={`/clients/${client.id}`} className="font-medium hover:text-foreground">
           {client.name}
         </Link>
@@ -73,7 +73,7 @@ export default async function ReleasePage({
         <ChevronRightIcon className="size-3.5" />
         <span className="text-foreground">{releaseLabel(release)}</span>
         {isCurrent && (
-          <span className="ml-1.5 rounded-md border bg-card px-1.5 text-[11px]">Current</span>
+          <span className="ml-1.5 rounded-md border bg-card px-1.5 text-[12px]">Current</span>
         )}
       </nav>
 

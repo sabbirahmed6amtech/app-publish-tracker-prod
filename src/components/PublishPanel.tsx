@@ -420,14 +420,14 @@ function Hero({
           </span>
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
             {update ? "Update in" : "Publish to"} {STORE[platform].store}
             {update && version ? ` · version ${version}` : ""}
           </p>
-          <h2 className="truncate text-[18px] font-semibold leading-tight">
+          <h2 className="truncate text-[20px] font-semibold leading-tight">
             {product.app_name || product.project_name}
           </h2>
-          <p className="truncate font-mono text-[11px] text-muted-foreground">
+          <p className="truncate font-mono text-[12px] text-muted-foreground">
             {product.package_name || "no package name yet"}
           </p>
         </div>
@@ -442,7 +442,7 @@ function Hero({
             <li key={label} className="flex flex-1 items-center last:flex-none">
               <span className="flex items-center gap-1.5">
                 <span
-                  className={`grid size-5 place-items-center rounded-full text-[10px] font-semibold transition-colors ${
+                  className={`grid size-5 place-items-center rounded-full text-[11px] font-semibold transition-colors ${
                     done
                       ? "bg-[var(--st-production)] text-white"
                       : current
@@ -607,7 +607,7 @@ function Ring({ value, total, size = 56 }: { value: number; total: number; size?
           style={{ transition: "stroke-dashoffset 0.9s cubic-bezier(0.2, 0.7, 0.2, 1)" }}
         />
       </svg>
-      <span className="absolute inset-0 grid place-items-center text-[13px] font-semibold tabular-nums">
+      <span className="absolute inset-0 grid place-items-center text-[14px] font-semibold tabular-nums">
         {value}/{total}
       </span>
     </div>
@@ -626,7 +626,7 @@ function AccountCard({ accountName, platform }: { accountName: string; platform:
         <ShieldCheckIcon className="size-4" />
       </span>
       <div className="min-w-0 text-[12px] leading-relaxed">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
           {STORE[platform].accountLabel}
         </p>
         <p className="truncate text-[14px] font-semibold text-foreground">
@@ -674,7 +674,7 @@ function Toggle({
         />
       </span>
       <span className="min-w-0 text-[12px] leading-relaxed">
-        <span className="block text-[13px] font-semibold text-foreground">{title}</span>
+        <span className="block text-[14px] font-semibold text-foreground">{title}</span>
         <span className="text-muted-foreground">{detail}</span>
       </span>
     </button>
@@ -697,7 +697,7 @@ function LaunchButton({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={`group relative flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl text-[15px] font-semibold text-white shadow-md transition-all disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none ${
+      className={`group relative flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl text-[16px] font-semibold text-white shadow-md transition-all disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none ${
         disabled ? "" : "pub-shine hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
       }`}
       style={{
@@ -763,7 +763,7 @@ function RunSummary({
         <div className="flex items-center gap-4">
           <Ring value={done} total={steps.length} size={64} />
           <div className="min-w-0 flex-1">
-            <h3 className="flex items-center gap-2 text-[15px] font-semibold">
+            <h3 className="flex items-center gap-2 text-[16px] font-semibold">
               {allGood ? (
                 <>
                   <PartyPopperIcon className="size-4 text-good" /> All {steps.length} {noun} done
@@ -792,7 +792,7 @@ function RunSummary({
 
       {phase === "paused" && (
         <div className="pub-attention tracker-rise rounded-2xl border border-warn/50 bg-warn-soft p-4">
-          <p className="flex items-center gap-2 text-[13px] font-semibold">
+          <p className="flex items-center gap-2 text-[14px] font-semibold">
             <PauseIcon className="size-4 text-warn" /> {pauseMessage || "The run is paused."}
           </p>
           <p className="mt-1 text-[12px] text-muted-foreground">
@@ -824,7 +824,7 @@ function RunSummary({
             />
           </div>
           {showLog && (
-            <pre className="max-h-[min(420px,45dvh)] overflow-y-auto whitespace-pre-wrap border-t bg-[oklch(0.2_0.006_260)] p-3.5 font-mono text-[11px] leading-relaxed text-[oklch(0.85_0.02_150)]">
+            <pre className="max-h-[min(420px,45dvh)] overflow-y-auto whitespace-pre-wrap border-t bg-[oklch(0.2_0.006_260)] p-3.5 font-mono text-[12px] leading-relaxed text-[oklch(0.85_0.02_150)]">
               {logs
                 .slice(-40)
                 .map((l) => l.msg)
@@ -844,7 +844,7 @@ function RunSummary({
               Clear run
             </button>
           </div>
-          <p className="text-[11px] leading-relaxed text-muted-foreground">
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
             {next ??
               "Next, by hand: review every section, upload the AAB under Release → Production (or Internal testing first), add release notes, and submit for review."}
           </p>
@@ -869,11 +869,11 @@ function Timeline({
   return (
     <section>
       <div className="mb-3 flex items-baseline justify-between">
-        <h3 className="text-[13px] font-semibold">
+        <h3 className="text-[14px] font-semibold">
           {live ? "Progress" : `${noun === "steps" ? "What it does" : "What gets filled"} · ${steps.length} ${noun}`}
         </h3>
         {!live && (
-          <span className="text-[11px] text-muted-foreground">in this order</span>
+          <span className="text-[12px] text-muted-foreground">in this order</span>
         )}
       </div>
       <ol className="relative">
@@ -907,7 +907,7 @@ function Timeline({
                     <Loader2Icon className="size-4 animate-spin" />
                   </span>
                 ) : (
-                  <span className="grid size-6 place-items-center rounded-full border-2 bg-card text-[10px] font-semibold text-muted-foreground">
+                  <span className="grid size-6 place-items-center rounded-full border-2 bg-card text-[11px] font-semibold text-muted-foreground">
                     {i + 1}
                   </span>
                 )}
@@ -918,17 +918,17 @@ function Timeline({
                 }`}
               >
                 <p
-                  className={`text-[13px] ${
+                  className={`text-[14px] ${
                     s.status === "pending" ? "text-muted-foreground" : "font-medium"
                   }`}
                 >
                   {s.name}
                 </p>
                 {s.status === "running" && (
-                  <p className="text-[11px] text-muted-foreground">Working on it…</p>
+                  <p className="text-[12px] text-muted-foreground">Working on it…</p>
                 )}
                 {s.error && (
-                  <p className="tracker-rise mt-0.5 text-[11px] leading-snug text-bad">{s.error}</p>
+                  <p className="tracker-rise mt-0.5 text-[12px] leading-snug text-bad">{s.error}</p>
                 )}
               </div>
             </li>
@@ -937,7 +937,7 @@ function Timeline({
       </ol>
 
       {!live && (
-        <p className="mt-4 rounded-xl border border-dashed bg-card px-3.5 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-4 rounded-xl border border-dashed bg-card px-3.5 py-2.5 text-[12px] leading-relaxed text-muted-foreground">
           {footnote}
         </p>
       )}
@@ -1022,7 +1022,7 @@ function ExtensionStatus({
   }
   if (installed) {
     return (
-      <p className="inline-flex items-center gap-1.5 rounded-full bg-good-soft px-2.5 py-1 text-[11px] font-medium text-good">
+      <p className="inline-flex items-center gap-1.5 rounded-full bg-good-soft px-2.5 py-1 text-[12px] font-medium text-good">
         <span className="relative flex size-1.5">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-[var(--st-production)] opacity-60" />
           <span className="relative inline-flex size-1.5 rounded-full bg-[var(--st-production)]" />

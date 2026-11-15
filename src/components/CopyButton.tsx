@@ -106,7 +106,7 @@ export function CopyButton({
         </svg>
       )}
       {state !== "idle" && (
-        <span className="text-[11px] font-medium">
+        <span className="text-[12px] font-medium">
           {state === "copied" ? "Copied" : "Failed"}
         </span>
       )}

@@ -118,13 +118,13 @@ export function TeamMemberDialog({
                 </button>
               </div>
               {editing && !hasAccount && (
-                <p className="mt-1 text-[11px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   No password yet — set one to let them sign in.
                 </p>
               )}
             </div>
 
-            <label className="flex cursor-pointer select-none items-center gap-2 text-[13px] text-foreground/85">
+            <label className="flex cursor-pointer select-none items-center gap-2 text-[14px] text-foreground/85">
               <input
                 type="checkbox"
                 name="active"

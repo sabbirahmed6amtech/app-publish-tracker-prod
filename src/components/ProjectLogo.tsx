@@ -1,8 +1,8 @@
 import type { LineBadge } from "@/lib/types";
 
 const SIZES = {
-  xs: "size-5 rounded text-[8px]",
-  sm: "size-7 rounded-md text-[10px]",
+  xs: "size-5 rounded text-[11px]",
+  sm: "size-7 rounded-md text-[11px]",
   md: "size-9 rounded-lg text-[12px]",
   lg: "size-12 rounded-xl text-[14px]",
 } as const;

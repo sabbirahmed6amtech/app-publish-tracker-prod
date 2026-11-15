@@ -53,11 +53,11 @@ export function TopBar({ items, actions }: { items: SearchItem[]; actions?: Reac
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg border bg-card px-2.5 text-[13px] text-muted-foreground shadow-xs transition-colors hover:border-ring/60"
+          className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg border bg-card px-2.5 text-[14px] text-muted-foreground shadow-xs transition-colors hover:border-ring/60"
         >
           <SearchIcon className="size-4 shrink-0" />
           <span className="flex-1 truncate text-left">Search clients, releases, apps…</span>
-          <kbd className="hidden rounded border bg-muted px-1.5 font-mono text-[10px] sm:inline">
+          <kbd className="hidden rounded border bg-muted px-1.5 font-mono text-[11px] sm:inline">
             ⌘K
           </kbd>
         </button>

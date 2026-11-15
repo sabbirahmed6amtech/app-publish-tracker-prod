@@ -271,7 +271,7 @@ export function AppsTable({
       </p>
 
       {filtered.length === 0 ? (
-        <div className="card px-4 py-10 text-center text-[13px] text-muted-foreground">
+        <div className="card px-4 py-10 text-center text-[14px] text-muted-foreground">
           {rows.length === 0
             ? "No apps yet. Create a client, then a release, then add its apps."
             : "Nothing matches those filters."}
@@ -331,7 +331,7 @@ function GroupCard({
           >
             {head.client_name} · {head.release_label}
           </Link>
-          <span className="ml-2 font-mono text-[11px] text-muted-foreground/80">#{head.ticket}</span>
+          <span className="ml-2 font-mono text-[12px] text-muted-foreground/80">#{head.ticket}</span>
           <div className="mt-0.5 truncate text-[12px] text-muted-foreground">
             {head.release_title ? `${head.release_title} · ` : ""}
             {head.release_assignee_name || "Unassigned"} · {rows.length} apps · {live} live
@@ -406,7 +406,7 @@ function Table({
                 >
                   {r.client_name}
                 </Link>
-                <span className="ml-1.5 text-[11px] text-muted-foreground/80">
+                <span className="ml-1.5 text-[12px] text-muted-foreground/80">
                   {r.release_label}
                 </span>
               </td>
@@ -438,7 +438,7 @@ function Table({
                 <StatusSelect appId={r.id} status={r.status} />
                 {isStale(r.status, r.status_changed_at) && (
                   <span
-                    className="text-[11px] font-medium text-muted-foreground/80"
+                    className="text-[12px] font-medium text-muted-foreground/80"
                     title={`No status change in ${daysSince(r.status_changed_at)} days`}
                   >
                     {daysSince(r.status_changed_at)}d

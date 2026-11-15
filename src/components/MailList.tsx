@@ -67,7 +67,7 @@ export function StatusIcon({ status, size = 14 }: { status: TicketStatus; size?:
 
 export function StatusLabel({ status }: { status: TicketStatus }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[13px]">
+    <span className="inline-flex items-center gap-1.5 text-[14px]">
       <StatusIcon status={status} />
       {TICKET_STATUSES[status].label}
     </span>
@@ -177,11 +177,11 @@ export function LinkPicker({ ticketId, targets }: { ticketId: string; targets: L
                     router.refresh();
                   })
                 }
-                className="gap-2 text-[13px]"
+                className="gap-2 text-[14px]"
               >
                 <StoreIcon platform={t.platform} size={12} />
                 <span className="truncate">{t.name}</span>
-                <span className="ml-auto truncate text-[11px] text-muted-foreground">{t.client}</span>
+                <span className="ml-auto truncate text-[12px] text-muted-foreground">{t.client}</span>
               </CommandItem>
             ))}
           </CommandList>
@@ -229,7 +229,7 @@ function SearchBox({ value, onChange, placeholder }: { value: string; onChange: 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-8 w-full rounded-md border bg-background pl-8 pr-2.5 text-[13px] outline-none placeholder:text-muted-foreground focus:border-ring"
+        className="h-8 w-full rounded-md border bg-background pl-8 pr-2.5 text-[14px] outline-none placeholder:text-muted-foreground focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       />
     </label>
   );
@@ -272,9 +272,9 @@ function TicketRow({ t }: { t: MailTicket }) {
               <SourceIcon source={t.source} size={13} />
             )}
             <span className="truncate text-[14px] font-semibold text-foreground">{name ?? "Unknown app"}</span>
-            {t.client_name && <span className="truncate text-[13px] text-muted-foreground">{t.client_name}</span>}
+            {t.client_name && <span className="truncate text-[14px] text-muted-foreground">{t.client_name}</span>}
           </span>
-          <span className="mt-1 block truncate text-[13px] text-muted-foreground">
+          <span className="mt-1 block truncate text-[14px] text-muted-foreground">
             {cleanSubject(t.subject, t.app_label)}
           </span>
         </span>
@@ -283,7 +283,7 @@ function TicketRow({ t }: { t: MailTicket }) {
             <KindLabel kind={t.kind} className="hidden sm:inline-flex" />
             <Ago iso={t.status === "resolved" && t.resolved_at ? t.resolved_at : t.last_mail_at} />
           </span>
-          <span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-2 text-[12px] text-muted-foreground">
             {t.mail_count > 1 && (
               <span className="inline-flex items-center gap-1 tabular-nums" title={`${t.mail_count} emails`}>
                 <MailIcon className="size-3" />
@@ -328,7 +328,7 @@ export function TicketList({
         </span>
       </div>
       {shown.length === 0 ? (
-        <p className="px-4 py-12 text-center text-[13px] text-muted-foreground">
+        <p className="px-4 py-12 text-center text-[14px] text-muted-foreground">
           {query ? "No tickets match your search." : empty}
         </p>
       ) : (
@@ -360,7 +360,7 @@ export function MailFeed({ mails, showApp = true }: { mails: StoreMail[]; showAp
         <li key={m.id} className="flex items-center gap-3 px-4 py-2.5">
           <SourceIcon source={m.source} />
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[13px] text-foreground" title={m.subject}>
+            <div className="truncate text-[14px] text-foreground" title={m.subject}>
               {m.subject}
             </div>
             <div className="mt-0.5 flex min-w-0 items-center gap-2">

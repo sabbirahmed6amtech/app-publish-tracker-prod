@@ -102,7 +102,7 @@ export default async function ClientPage({
             {initials(client.name)}
           </span>
           <div className="min-w-0">
-            <h1 className="truncate text-[22px] font-semibold tracking-tight">{client.name}</h1>
+            <h1 className="truncate text-[24px] font-semibold tracking-tight">{client.name}</h1>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[12px] text-muted-foreground">
               <span className="inline-flex items-center gap-0.5 font-mono">
                 Ticket #{client.ticket}
@@ -280,11 +280,11 @@ function MailTab({ client, mails }: { client: ClientFull; mails: StoreMail[] }) 
           <section key={p.id} className="card overflow-hidden">
             <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2">
               <StoreIcon platform={platform} size={14} />
-              <span className="text-[13px] font-semibold">{p.app_name || p.project_name}</span>
-              <span className="truncate font-mono text-[11px] text-muted-foreground">
+              <span className="text-[14px] font-semibold">{p.app_name || p.project_name}</span>
+              <span className="truncate font-mono text-[12px] text-muted-foreground">
                 {p.package_name || "no package name"}
               </span>
-              <span className="ml-auto text-[11px] tabular-nums text-muted-foreground">
+              <span className="ml-auto text-[12px] tabular-nums text-muted-foreground">
                 {list.length} {list.length === 1 ? "email" : "emails"}
               </span>
             </div>
@@ -365,7 +365,7 @@ function AppsTab({
       </div>
 
       {products.length === 0 ? (
-        <p className="px-4 py-10 text-center text-[13px] text-muted-foreground">
+        <p className="px-4 py-10 text-center text-[14px] text-muted-foreground">
           No apps yet.
         </p>
       ) : (
@@ -418,7 +418,7 @@ function AppsTab({
                               )}
                               {p.archived && <Tag>Archived</Tag>}
                             </div>
-                            <div className="text-[11px] text-muted-foreground">
+                            <div className="text-[12px] text-muted-foreground">
                               {p.project_name}
                             </div>
                           </div>
@@ -451,7 +451,7 @@ function AppsTab({
                           <span className="text-muted-foreground/60">Not live yet</span>
                         )}
                         {p.store_checked_at && (
-                          <div className="mt-0.5 text-[11px] text-muted-foreground">
+                          <div className="mt-0.5 text-[12px] text-muted-foreground">
                             {p.store_live
                               ? `Live on store${p.store_version ? ` · v${p.store_version}` : ""}`
                               : "Not on the store"}
@@ -666,14 +666,14 @@ function CredentialsTab({ client }: { client: ClientFull }) {
             <h3 className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold">
               <StoreIcon platform="play_store" size={13} /> Play Store
             </h3>
-            <dl className="space-y-2 text-[13px]">{detailRows(playDetails)}</dl>
+            <dl className="space-y-2 text-[14px]">{detailRows(playDetails)}</dl>
           </div>
           <div className="border-t px-4 py-3 md:border-t-0 md:border-l">
             <h3 className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold">
               <StoreIcon platform="app_store" size={13} /> App Store
             </h3>
-            <dl className="space-y-2 text-[13px]">{detailRows(iosDetails)}</dl>
-            <p className="mt-2 text-[11px] text-muted-foreground">
+            <dl className="space-y-2 text-[14px]">{detailRows(iosDetails)}</dl>
+            <p className="mt-2 text-[12px] text-muted-foreground">
               The privacy policy URL is shared with Play.
             </p>
           </div>
@@ -691,19 +691,19 @@ function CredentialsTab({ client }: { client: ClientFull }) {
           <AccountDialog clientId={client.id} trigger="+ Account" className="btn btn-secondary" />
         </div>
         {client.publisher_accounts.length === 0 ? (
-          <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+          <p className="px-4 py-8 text-center text-[14px] text-muted-foreground">
             No store account yet.
           </p>
         ) : (
           <ul className="divide-y">
             {client.publisher_accounts.map((a) => (
               <li key={a.id} className="flex items-center gap-3 px-4 py-2.5">
-                <span className="flex w-28 shrink-0 items-center gap-1.5 text-[13px] font-medium">
+                <span className="flex w-28 shrink-0 items-center gap-1.5 text-[14px] font-medium">
                   <StoreIcon platform={a.platform} size={14} />
                   {PLATFORMS[a.platform].label}
                 </span>
                 <span className="flex min-w-0 flex-1 items-center gap-1">
-                  <span className="truncate text-[13px]">
+                  <span className="truncate text-[14px]">
                     {a.account_name || <span className="text-muted-foreground">unnamed</span>}
                   </span>
                   {a.account_name && (
@@ -744,7 +744,7 @@ function CredentialsTab({ client }: { client: ClientFull }) {
           <KeystoreDialog clientId={client.id} trigger="+ Keystore" className="btn btn-secondary" />
         </div>
         {client.keystores.length === 0 ? (
-          <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+          <p className="px-4 py-8 text-center text-[14px] text-muted-foreground">
             No keystore yet.
           </p>
         ) : (
@@ -753,7 +753,7 @@ function CredentialsTab({ client }: { client: ClientFull }) {
               const users = keystoreUsers.get(k.id) ?? [];
               return (
                 <li key={k.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5">
-                  <span className="w-40 shrink-0 truncate text-[13px] font-medium">{k.name}</span>
+                  <span className="w-40 shrink-0 truncate text-[14px] font-medium">{k.name}</span>
                   <span className="flex min-w-0 flex-1 items-center gap-2">
                     {k.file_path ? (
                       <>
@@ -857,8 +857,8 @@ function EmptyState({
 }) {
   return (
     <div className="card px-6 py-14 text-center">
-      <p className="text-[15px] font-semibold">{title}</p>
-      <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">{body}</p>
+      <p className="text-[16px] font-semibold">{title}</p>
+      <p className="mx-auto mt-1 max-w-md text-[14px] text-muted-foreground">{body}</p>
       <div className="mt-5 flex justify-center">{action}</div>
     </div>
   );
