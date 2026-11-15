@@ -8,6 +8,7 @@ import { ProjectLogo } from "@/components/ProjectLogo";
 import { StoreIcon } from "@/components/StoreIcon";
 import { createRound } from "@/lib/actions";
 import type { LineBadge, Platform, TeamMember } from "@/lib/types";
+import { startNavigation } from "@/components/NavigationProgress";
 
 export type RoundApp = {
   id: string;
@@ -77,7 +78,10 @@ export function NewRoundDialog({
       const res = await createRound(fd);
       if (!res.ok) return setError(res.error);
       setOpen(false);
-      if (res.id) router.push(`/releases/${res.id}`);
+      if (res.id) {
+        startNavigation(`/releases/${res.id}`);
+        router.push(`/releases/${res.id}`);
+      }
       router.refresh();
     });
   }

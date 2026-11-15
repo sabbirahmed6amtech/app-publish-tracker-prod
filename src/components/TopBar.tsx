@@ -12,6 +12,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { startNavigation } from "@/components/NavigationProgress";
 
 export type SearchItem = {
   id: string;
@@ -84,6 +85,7 @@ export function TopBar({ items, actions }: { items: SearchItem[]; actions?: Reac
                       value={`${item.label} ${item.sub} ${item.id}`}
                       onSelect={() => {
                         setOpen(false);
+                        startNavigation(item.href);
                         router.push(item.href);
                       }}
                     >

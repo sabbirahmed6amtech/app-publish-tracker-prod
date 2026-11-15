@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MAIL_KINDS, ticketRef, type MailKind } from "@/lib/mailRules";
+import { startNavigation } from "@/components/NavigationProgress";
 
 const POLL_MS = 45_000;
 const SINCE_KEY = "apt_mail_alert_since";
@@ -65,7 +66,10 @@ export function MailAlerts() {
 
         for (const a of [...data.tickets].reverse()) {
           const title = titleOf(a);
-          const open = () => router.push(`/mail/${a.number}`);
+          const open = () => {
+            startNavigation(`/mail/${a.number}`);
+            router.push(`/mail/${a.number}`);
+          };
           toast[a.assigned_to_me ? "info" : "warning"](title, {
             id: `ticket-${a.id}`,
             description: a.subject,

@@ -13,6 +13,7 @@ import { ProjectLogo } from "@/components/ProjectLogo";
 import { StoreIcon } from "@/components/StoreIcon";
 import { ACCOUNT_TYPES, PLATFORMS } from "@/lib/constants";
 import type { AccountType, LineBadge, Platform, ProductLine } from "@/lib/types";
+import { startNavigation } from "@/components/NavigationProgress";
 
 const STEPS = ["Client", "Stores", "Apps", "Keystore"] as const;
 const PLATFORM_KEYS = Object.keys(PLATFORMS) as Platform[];
@@ -139,6 +140,7 @@ export function NewClientWizard({
       toast.success(`${name} is set up${startRelease ? " and its first release has started" : ""}`);
       setOpen(false);
       reset();
+      startNavigation(`/clients/${res.id}`);
       router.push(`/clients/${res.id}`);
       router.refresh();
     });

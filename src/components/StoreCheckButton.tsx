@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { RefreshCwIcon } from "lucide-react";
 import { toast } from "sonner";
 import { checkStoreNow } from "@/lib/actions";
+import { startNavigation } from "@/components/NavigationProgress";
 
 /** Look this app up on its store now, instead of waiting for the hourly check. */
 export function StoreCheckButton({
@@ -31,6 +32,7 @@ export function StoreCheckButton({
                   label: "Add it",
                   onClick: () => {
                     onNavigate?.();
+                    startNavigation(`/clients/${clientId}?tab=apps`);
                     router.push(`/clients/${clientId}?tab=apps`);
                   },
                 },

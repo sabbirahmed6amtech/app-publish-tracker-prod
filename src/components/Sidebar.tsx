@@ -114,7 +114,6 @@ export function Sidebar({
                 <Link
                   key={item.href}
                   href={item.href}
-                  prefetch
                   onClick={close}
                   className={`flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[13px] font-medium
                               transition-colors ${
@@ -248,7 +247,6 @@ function ReleaseRail({
             <Link
               key={r.id}
               href={`/releases/${r.id}`}
-              prefetch
               onClick={onNavigate}
               className={`block rounded-lg px-2.5 py-1.5 transition-colors ${
                 active ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/70"
