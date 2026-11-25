@@ -41,11 +41,15 @@ export function CopyButton({
   label = "Copy",
   className = "",
   tone = "light",
+  size = 13,
+  showStatusText = true,
 }: {
   value: string;
   label?: string;
   className?: string;
   tone?: "light" | "dark";
+  size?: number;
+  showStatusText?: boolean;
 }) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -84,7 +88,7 @@ export function CopyButton({
                   } ${className}`}
     >
       {copied ? (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
           <path
             d="m5 13 4 4L19 7"
             stroke="currentColor"
@@ -94,7 +98,7 @@ export function CopyButton({
           />
         </svg>
       ) : (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
           <rect
             x="9" y="9" width="11" height="11" rx="2"
             stroke="currentColor" strokeWidth="2"
@@ -105,7 +109,7 @@ export function CopyButton({
           />
         </svg>
       )}
-      {state !== "idle" && (
+      {showStatusText && state !== "idle" && (
         <span className="text-[12px] font-medium">
           {state === "copied" ? "Copied" : "Failed"}
         </span>

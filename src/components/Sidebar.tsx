@@ -321,6 +321,8 @@ function ReleaseRail({
             <CopyButton
               value={`${client.ticket} - ${client.name}`}
               label="Copy ticket and name"
+              size={18}
+              showStatusText={false}
               className="pointer-events-auto relative z-10 -mr-1 p-1.5"
             />
           </div>
