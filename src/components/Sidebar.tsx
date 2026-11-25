@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
-  ArrowRightIcon,
   BookOpenIcon,
   Building2Icon,
   ChartColumnIcon,
@@ -13,6 +12,8 @@ import {
   LogOutIcon,
   MailIcon,
   MenuIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
   PlusIcon,
   SettingsIcon,
   type LucideIcon,
@@ -42,6 +43,8 @@ export type SidebarClient = {
   releases: SidebarRelease[];
 };
 
+const COLLAPSED_KEY = "sidebar:collapsed";
+
 const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "My work", icon: KanbanIcon },
   { href: "/clients", label: "Clients", icon: Building2Icon },
@@ -63,7 +66,34 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const close = () => setOpen(false);
+
+  useEffect(() => {
+    try {
+      setCollapsed(window.localStorage.getItem(COLLAPSED_KEY) === "1");
+    } catch {}
+  }, []);
+
+  const toggleCollapsed = () =>
+    setCollapsed((value) => {
+      try {
+        window.localStorage.setItem(COLLAPSED_KEY, value ? "0" : "1");
+      } catch {}
+      return !value;
+    });
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== "b" || !(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return;
+      const el = event.target as HTMLElement | null;
+      if (el && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
+      event.preventDefault();
+      toggleCollapsed();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -118,15 +148,42 @@ export function Sidebar({
       <aside
         className={`${open ? "fixed inset-y-0 left-0 z-50 block w-[85vw] max-w-[320px] overflow-y-auto shadow-xl" : "hidden"}
                     shrink-0 border-r bg-sidebar text-sidebar-foreground
-                    lg:static lg:z-auto lg:block lg:w-[260px] lg:max-w-none lg:overflow-visible lg:shadow-none`}
+                    lg:static lg:z-auto lg:block lg:max-w-none lg:overflow-visible lg:shadow-none
+                    lg:transition-[width] lg:duration-200 motion-reduce:lg:transition-none
+                    ${collapsed ? "lg:w-16" : "lg:w-[260px]"}`}
+        data-collapsed={collapsed ? "true" : undefined}
       >
         <div className="flex h-full flex-col lg:sticky lg:top-0 lg:h-screen">
-          <div className="hidden h-14 items-center gap-2.5 border-b px-4 lg:flex">
-            <BrandMark className="size-7" />
-            <div className="leading-tight">
-              <div className="text-[14px] font-semibold">Publish Tracker</div>
-              <div className="text-[12px] text-muted-foreground">Store submissions</div>
-            </div>
+          <div className={`hidden h-14 items-center border-b lg:flex ${collapsed ? "justify-center px-2" : "gap-2.5 px-4"}`}>
+            {collapsed ? (
+              <button
+                type="button"
+                onClick={toggleCollapsed}
+                aria-label="Expand sidebar"
+                title="Expand sidebar (Ctrl/⌘ B)"
+                className="group/brand grid size-9 place-items-center rounded-lg hover:bg-sidebar-accent"
+              >
+                <BrandMark className="size-7 group-hover/brand:hidden" />
+                <PanelLeftOpenIcon className="hidden size-4 group-hover/brand:block" />
+              </button>
+            ) : (
+              <>
+                <BrandMark className="size-7" />
+                <div className="min-w-0 flex-1 leading-tight">
+                  <div className="truncate text-[14px] font-semibold">Publish Tracker</div>
+                  <div className="truncate text-[12px] text-muted-foreground">Store submissions</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleCollapsed}
+                  aria-label="Collapse sidebar"
+                  title="Collapse sidebar (Ctrl/⌘ B)"
+                  className="btn btn-ghost size-8 px-0"
+                >
+                  <PanelLeftCloseIcon className="size-4" />
+                </button>
+              </>
+            )}
           </div>
 
           <nav className="space-y-0.5 px-2 py-2">
@@ -142,17 +199,23 @@ export function Sidebar({
                   key={item.href}
                   href={item.href}
                   onClick={close}
-                  className={`flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[14px] font-medium
-                              transition-colors ${
+                  title={collapsed ? item.label : undefined}
+                  aria-current={active ? "page" : undefined}
+                  className={`relative flex h-8 items-center gap-2.5 rounded-lg px-2.5 text-[14px] font-medium
+                              transition-colors ${collapsed ? "lg:justify-center lg:px-0" : ""} ${
                                 active
                                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                                   : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground"
                               }`}
                 >
-                  <Icon className="size-4" />
-                  {item.label}
+                  <Icon className="size-4 shrink-0" />
+                  <span className={collapsed ? "lg:sr-only" : ""}>{item.label}</span>
                   {item.href === "/mail" && openMail > 0 && (
-                    <span className="ml-auto rounded-full bg-bad-soft px-1.5 text-[12px] font-semibold tabular-nums text-bad">
+                    <span
+                      className={`rounded-full bg-bad-soft px-1.5 text-[12px] font-semibold tabular-nums text-bad ${
+                        collapsed ? "ml-auto lg:absolute lg:-right-0.5 lg:-top-1 lg:ml-0 lg:px-1 lg:text-[11px]" : "ml-auto"
+                      }`}
+                    >
                       {openMail}
                     </span>
                   )}
@@ -161,27 +224,49 @@ export function Sidebar({
             })}
           </nav>
 
+          {activeClient && collapsed && (
+            <div className="hidden justify-center border-t px-2 py-3 lg:flex">
+              <Link
+                href={`/clients/${activeClient.id}`}
+                title={`${activeClient.name} · Ticket #${activeClient.ticket}`}
+                aria-label={`Open ${activeClient.name}`}
+                className="grid size-9 place-items-center rounded-lg bg-primary text-[14px] font-semibold text-primary-foreground"
+              >
+                {initials(activeClient.name)}
+              </Link>
+            </div>
+          )}
+
           {activeClient ? (
-            <ReleaseRail
-              client={activeClient}
-              activeReleaseId={releaseMatch?.[1]}
-              onNavigate={close}
-            />
+            <div className={`flex min-h-0 flex-1 flex-col ${collapsed ? "lg:hidden" : ""}`}>
+              <ReleaseRail
+                client={activeClient}
+                activeReleaseId={releaseMatch?.[1]}
+                onNavigate={close}
+              />
+            </div>
           ) : (
             <div className="flex-1" />
           )}
+          {activeClient && collapsed && <div className="hidden flex-1 lg:block" />}
 
-          <div className="flex items-center justify-between border-t px-3 py-2">
-            <span className="text-[12px] font-medium text-muted-foreground">Theme</span>
-            <ThemeToggle />
+          <div className={`flex items-center justify-between border-t px-3 py-2 ${collapsed ? "lg:justify-center lg:px-2" : ""}`}>
+            <span className={`text-[12px] font-medium text-muted-foreground ${collapsed ? "lg:hidden" : ""}`}>Theme</span>
+            <ThemeToggle className={collapsed ? "lg:flex-col" : ""} />
           </div>
 
           {email && (
-            <div className="flex items-center gap-2.5 border-t px-3 py-2.5">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-muted text-[12px] font-semibold uppercase">
+            <div className={`flex items-center gap-2.5 border-t px-3 py-2.5 ${collapsed ? "lg:flex-col lg:px-2" : ""}`}>
+              <span
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-muted text-[12px] font-semibold uppercase"
+                title={collapsed ? email : undefined}
+              >
                 {email.slice(0, 2)}
               </span>
-              <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground" title={email}>
+              <span
+                className={`min-w-0 flex-1 truncate text-[12px] text-muted-foreground ${collapsed ? "lg:hidden" : ""}`}
+                title={email}
+              >
                 {email}
               </span>
               <form action={signOut}>
@@ -229,16 +314,15 @@ function ReleaseRail({
             </span>
             <div className="min-w-0 flex-1 leading-tight">
               <div className="truncate text-[14px] font-semibold">{client.name}</div>
-              <div className="mt-0.5 flex items-center gap-0.5 font-mono text-[12px] text-muted-foreground">
+              <div className="mt-0.5 font-mono text-[12px] text-muted-foreground">
                 Ticket #{client.ticket}
-                <CopyButton
-                  value={`${client.ticket} - ${client.name}`}
-                  label="Copy ticket and name"
-                  className="pointer-events-auto relative z-10"
-                />
               </div>
             </div>
-            <ArrowRightIcon className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+            <CopyButton
+              value={`${client.ticket} - ${client.name}`}
+              label="Copy ticket and name"
+              className="pointer-events-auto relative z-10 -mr-1 p-1.5"
+            />
           </div>
 
           <div className="pointer-events-none mt-3 grid grid-cols-3 divide-x rounded-lg border bg-card text-center">
