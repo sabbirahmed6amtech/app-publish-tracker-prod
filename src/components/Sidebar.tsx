@@ -23,6 +23,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { StoreIcon } from "@/components/StoreIcon";
 import type { Platform, ReleaseState } from "@/lib/types";
 import { BrandMark } from "@/components/BrandMark";
+import { CopyButton } from "@/components/CopyButton";
 
 export type SidebarRelease = {
   id: string;
@@ -215,32 +216,39 @@ function ReleaseRail({
   return (
     <>
       <div className="border-t px-3 pb-3 pt-3">
-        <Link
-          href={`/clients/${client.id}`}
-          onClick={onNavigate}
-          className="group block rounded-xl border bg-background p-3 transition-colors hover:border-ring/60"
-        >
-          <div className="flex items-center gap-2.5">
+        <div className="group relative rounded-xl border bg-background p-3 transition-colors hover:border-ring/60 has-[a:focus-visible]:ring-3 has-[a:focus-visible]:ring-ring/50">
+          <Link
+            href={`/clients/${client.id}`}
+            onClick={onNavigate}
+            aria-label={`Open ${client.name}`}
+            className="absolute inset-0 rounded-xl outline-none"
+          />
+          <div className="pointer-events-none flex items-center gap-2.5">
             <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-[14px] font-semibold text-primary-foreground">
               {initials(client.name)}
             </span>
             <div className="min-w-0 flex-1 leading-tight">
               <div className="truncate text-[14px] font-semibold">{client.name}</div>
-              <div className="mt-0.5 font-mono text-[12px] text-muted-foreground">
+              <div className="mt-0.5 flex items-center gap-0.5 font-mono text-[12px] text-muted-foreground">
                 Ticket #{client.ticket}
+                <CopyButton
+                  value={`${client.ticket} - ${client.name}`}
+                  label="Copy ticket and name"
+                  className="pointer-events-auto relative z-10"
+                />
               </div>
             </div>
             <ArrowRightIcon className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
           </div>
 
-          <div className="mt-3 grid grid-cols-3 divide-x rounded-lg border bg-card text-center">
+          <div className="pointer-events-none mt-3 grid grid-cols-3 divide-x rounded-lg border bg-card text-center">
             <Stat value={client.releases.length} label="Releases" />
             <Stat value={apps} label="Apps" />
             <Stat value={live} label="Live" />
           </div>
 
           {client.platforms.length > 0 && (
-            <div className="mt-2.5 flex flex-wrap gap-1">
+            <div className="pointer-events-none mt-2.5 flex flex-wrap gap-1">
               {client.platforms.map((p) => (
                 <span
                   key={p}
@@ -252,7 +260,7 @@ function ReleaseRail({
               ))}
             </div>
           )}
-        </Link>
+        </div>
       </div>
 
       <div className="flex items-center justify-between px-4 pb-1.5 pt-1">
